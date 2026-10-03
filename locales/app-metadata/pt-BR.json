@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "NSUserTrackingUsageDescription": "Podemos usar informações de atividade de outros apps e sites para anúncios personalizados e medição de desempenho."
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "NSUserTrackingUsageDescription": "パーソナライズ広告と効果測定のために、他のアプリやWebサイトの利用情報を使用することがあります。"
+  }
+}

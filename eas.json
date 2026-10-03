@@ -1,0 +1,68 @@
+{
+  "cli": {
+    "version": ">= 16.24.1",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "credentialsSource": "local",
+      "env": {
+        "EAS_NO_FROZEN_LOCKFILE": "1",
+        "JOBS": "10"
+      },
+      "node": "24.14.0",
+      "android": {
+        "autoIncrement": true
+      },
+      "ios": {
+        "autoIncrement": true,
+        "image": "latest"
+      }
+    },
+    "production-ios": {
+      "credentialsSource": "local",
+      "env": {
+        "EAS_NO_FROZEN_LOCKFILE": "1",
+        "JOBS": "10"
+      },
+      "node": "24.14.0",
+      "ios": {
+        "autoIncrement": true,
+        "image": "latest"
+      }
+    },
+    "production-android": {
+      "credentialsSource": "local",
+      "env": {
+        "EAS_NO_FROZEN_LOCKFILE": "1",
+        "JOBS": "10"
+      },
+      "node": "24.14.0",
+      "android": {
+        "autoIncrement": true
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./credentials/android/play-store-service-account.json",
+        "track": "production"
+      }
+    },
+    "production-android": {
+      "android": {
+        "serviceAccountKeyPath": "./credentials/android/play-store-service-account.json",
+        "track": "production"
+      }
+    }
+  }
+}
