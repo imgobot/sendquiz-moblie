@@ -1,6 +1,6 @@
 import type { ExpoConfig } from 'expo/config';
 
-const DEFAULT_APP_VERSION = '5.2026.001';
+const DEFAULT_APP_VERSION = '11.2026.001';
 const DEFAULT_APP_BASE_URL = 'https://sendquiz.imgobot.com';
 const ROOT_VIEW_BACKGROUND_COLOR = '#FFFFFF';
 const EAS_PROJECT_ID = '3ae1c128-d77a-4bbc-ba89-b1c880a0a793';
@@ -61,15 +61,10 @@ function isProductionBuild() {
   return isEasBuild();
 }
 
-function isLocalAdMobEnabled() {
-  return process.env.is_admob === '1';
-}
-
 export default (): ExpoConfig => {
   const isProduction = isProductionBuild();
   const appIdentifier = isProduction ? 'com.send.quiz' : 'com.send.quiz.dev';
   const apiBaseUrl = normalizeBaseUrl(process.env.APP_BASE_URL) ?? DEFAULT_APP_BASE_URL;
-  const isAdMobEnabled = isProduction || isLocalAdMobEnabled();
   const easProjectId = normalizeEnv(process.env.EAS_PROJECT_ID) ?? EAS_PROJECT_ID;
   const iosGoogleServicesFile =
     normalizeEnv(process.env.IOS_GOOGLE_SERVICES_FILE) ??
@@ -192,7 +187,6 @@ export default (): ExpoConfig => {
     },
     extra: {
       apiBaseUrl,
-      isAdMobEnabled,
       eas: {
         projectId: easProjectId,
       },

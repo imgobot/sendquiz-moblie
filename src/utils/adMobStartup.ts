@@ -4,7 +4,6 @@ import mobileAds, {
   AdsConsentStatus,
   MaxAdContentRating,
 } from 'react-native-google-mobile-ads';
-import { IS_AD_MOB_ENABLED } from '../constants/adMobConfig';
 import { setAdMobReady } from './adMobReady';
 import { requestTrackingPermissionIfNeeded } from './trackingTransparency';
 
@@ -43,11 +42,6 @@ async function syncMediationPrivacy() {
 export async function startAdMobIfNeeded() {
   if (adMobStartupStarted) return;
   adMobStartupStarted = true;
-
-  if (!IS_AD_MOB_ENABLED) {
-    setAdMobReady(false);
-    return;
-  }
 
   const { canRequestAds } = await gatherConsentInfo();
   if (!canRequestAds) {

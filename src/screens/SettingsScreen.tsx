@@ -2,28 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { memo, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from "expo-router/react-navigation";
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
 import { useTheme } from '../contexts/ThemeContext';
 import type { ThemeMode } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import AuthModal from '../components/AuthModal';
-import { clearAccessToken, getAccessToken } from '../services/authedFetch';
-
-const LANGUAGES = [
-  { code: 'ko', name: '한국어' },
-  { code: 'en', name: 'English' },
-  { code: 'ja', name: '日本語' },
-  { code: 'zh', name: '中文' },
-  { code: 'hi', name: 'हिन्दी' },
-  { code: 'pt-BR', name: 'Português (BR)' },
-  { code: 'id', name: 'Bahasa Indonesia' },
-  { code: 'es', name: 'Español' },
-  { code: 'tr', name: 'Türkçe' },
-  { code: 'de', name: 'Deutsch' },
-] as const;
+import { LANGUAGES, useSettingsActions } from './useSettingsActions';
 
 const LANGUAGE_NAMES: Record<string, string> = Object.fromEntries(LANGUAGES.map(l => [l.code, l.name]));
 const THEME_OPTIONS: { mode: ThemeMode; labelKey: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -68,63 +54,16 @@ const Section = memo(({ title, children, palette }: { title: string; children: R
 });
 
 export default function SettingsScreen() {
-  const router = useRouter();
   const { themeMode, setThemeMode, palette } = useTheme();
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const {
+    isLoggedIn, showAuthModal, setShowAuthModal, handleProfilePress,
+    handleOpenTerms, handleOpenPrivacy, handleOpenFeedback,
+    handleLoginPress, handleLogout, handleAuthSuccess,
+  } = useSettingsActions();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-
-      const checkSession = async () => {
-        try {
-          const token = await getAccessToken();
-          if (isActive) {
-            setIsLoggedIn(Boolean(token));
-          }
-        } catch {
-          if (isActive) {
-            setIsLoggedIn(false);
-          }
-        }
-      };
-
-      checkSession();
-
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
-
-  const handleProfilePress = useCallback(() => {
-    if (isLoggedIn) {
-      router.push('/profile-manage');
-    } else {
-      setShowAuthModal(true);
-    }
-  }, [isLoggedIn, router]);
   const handleOpenLanguageModal = useCallback(() => setShowLanguageModal(true), []);
-  const handleOpenTerms = useCallback(() => router.push({ pathname: '/policy-webview', params: { document: 'terms' } }), [router]);
-  const handleOpenPrivacy = useCallback(() => router.push({ pathname: '/policy-webview', params: { document: 'privacy' } }), [router]);
-  const handleOpenFeedback = useCallback(() => router.push('/feedback'), [router]);
-  const handleLoginPress = useCallback(() => setShowAuthModal(true), []);
-  const handleLogout = useCallback(async () => {
-    try {
-      await clearAccessToken();
-    } finally {
-      setIsLoggedIn(false);
-    }
-  }, []);
-  const handleAuthSuccess = useCallback(() => {
-    setShowAuthModal(false);
-    setIsLoggedIn(true);
-    router.replace('/');
-  }, [router]);
   const handleSelectLanguage = useCallback((code: string) => {
     setLanguage(code);
     setShowLanguageModal(false);

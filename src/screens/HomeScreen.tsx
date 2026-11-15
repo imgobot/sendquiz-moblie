@@ -1,4 +1,3 @@
-import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as StoreReview from 'expo-store-review';
@@ -6,39 +5,33 @@ import { useIsFocused } from "expo-router/react-navigation";
 import { Stack, useNavigation, useRouter } from 'expo-router';
 import type { DrawerNavigationProp } from 'expo-router/drawer';
 import type { ParamListBase } from 'expo-router/react-navigation';
-import { type ElementRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   StyleSheet,
-  TextInput,
-  TextInputContentSizeChangeEvent,
   View,
 } from 'react-native';
-import { KeyboardChatScrollView, KeyboardGestureArea, KeyboardStickyView } from 'react-native-keyboard-controller';
-import Animated, { FadeIn, FadeOut, LinearTransition, useSharedValue, withTiming } from 'react-native-reanimated';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardGestureArea, KeyboardStickyView, useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { AdMobBanner300x250, AdMobBanner320x50 } from '../components/ads';
+import { AdMobNativeAd } from '../components/ads';
 import MenuIcon from '@expo/material-symbols/menu.xml';
 import AccountIcon from '@expo/material-symbols/account_circle.xml';
 import EditIcon from '@expo/material-symbols/edit.xml';
 import { msg } from '../constants/appMessages';
-import { CHAT_COMPOSER_TEXT_INPUT_PROPS } from '../constants/textInput';
+import ChatComposer from '../components/chat/ChatComposer';
+import { CHAT_INPUT_NATIVE_ID, COMPOSER_MIN_HEIGHT, type ChatComposerHandle } from '../components/chat/ChatComposer.types';
 import { useQuizThread, type ThreadMessage } from '../contexts/QuizThreadContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { isAuthRequiredError } from '../utils/errors';
 
-const COMPOSER_MIN_HEIGHT = 44;
-const COMPOSER_LINE_HEIGHT = 20;
-const COMPOSER_MAX_INPUT_HEIGHT = COMPOSER_LINE_HEIGHT * 5;
-const COMPOSER_TOP_PADDING = 8;
-const COMPOSER_KEYBOARD_MARGIN = 8;
-const COMPOSER_BASE_HEIGHT = COMPOSER_MIN_HEIGHT + COMPOSER_TOP_PADDING;
-const CHAT_INPUT_NATIVE_ID = 'home-chat-input';
+const COMPOSER_SPACING = 8;
 
 function normalizeAnswer(value: string) {
   return value.normalize('NFKC').replace(/[\s\p{P}\p{S}]+/gu, '');
@@ -81,15 +74,12 @@ export default function HomeScreen() {
   const [activeQuizItems, setActiveQuizItems] = useState<ThreadMessage[]>([]);
   const [wrongQuizItems, setWrongQuizItems] = useState<ThreadMessage[]>([]);
   const [quizSessionMessages, setQuizSessionMessages] = useState<ThreadMessage[]>([]);
-  const [inputHeight, setInputHeight] = useState(COMPOSER_MIN_HEIGHT);
   const [composerHeight, setComposerHeight] = useState(0);
   const router = useRouter();
   const drawer = useNavigation<DrawerNavigationProp<ParamListBase>>('/');
   const isFocused = useIsFocused();
-  const scrollRef = useRef<ElementRef<typeof KeyboardChatScrollView>>(null);
-  const inputRef = useRef<TextInputInstance>(null);
+  const inputRef = useRef<ChatComposerHandle>(null);
   const quizMessageIdRef = useRef(0);
-  const composerExtraPaddingSV = useSharedValue(0);
   const {
     chatTitle,
     messages: threadMessages,
@@ -120,7 +110,10 @@ export default function HomeScreen() {
   const isThreadOpen =
     selectedChatId != null || isLoadingThread || threadErrorKey != null || threadMessages.length > 0;
   const displayedChatTitle = chatTitle || t('quiz.newChatTitle');
-  const keyboardOffset = insets.bottom - COMPOSER_KEYBOARD_MARGIN;
+  const { progress: keyboardProgress } = useReanimatedKeyboardAnimation();
+  const composerSafeAreaStyle = useAnimatedStyle(() => ({
+    paddingBottom: COMPOSER_SPACING + insets.bottom * (1 - keyboardProgress.value),
+  }));
   const messageActionIconColor = isDark ? '#FFFFFF' : '#111111';
   const quizStartButtonBackground = isDark ? '#FFFFFF' : '#111111';
   const quizStartButtonForeground = isDark ? '#111111' : '#FFFFFF';
@@ -173,33 +166,9 @@ export default function HomeScreen() {
     router.push('/rename-chat');
   }, [router]);
 
-  const handleContentSizeChange = useCallback(
-    (event: TextInputContentSizeChangeEvent) => {
-      const nextHeight = Math.min(
-        COMPOSER_MAX_INPUT_HEIGHT,
-        Math.max(COMPOSER_MIN_HEIGHT, Math.ceil(event.nativeEvent.contentSize.height))
-      );
-      if (nextHeight !== inputHeight) setInputHeight(nextHeight);
-    },
-    [inputHeight]
-  );
-
-  const handleComposerLayout = useCallback(
-    (height: number) => {
-      if (!isFocused) return;
-
-      const extraPadding = Math.max(height - COMPOSER_BASE_HEIGHT, 0);
-      composerExtraPaddingSV.value = withTiming(extraPadding, { duration: 250 });
-      if (height !== composerHeight) setComposerHeight(height);
-    },
-    [composerExtraPaddingSV, composerHeight, isFocused]
-  );
-
-  useEffect(() => {
-    if (isFocused) return;
-
-    composerExtraPaddingSV.value = withTiming(0, { duration: 120 });
-  }, [composerExtraPaddingSV, isFocused]);
+  const handleComposerLayout = useCallback((height: number) => {
+    setComposerHeight(height);
+  }, []);
 
   const requestInAppReview = useCallback(() => {
     if (Platform.OS !== 'ios' && Platform.OS !== 'android') return;
@@ -283,10 +252,6 @@ export default function HomeScreen() {
     t,
   ]);
 
-  const handleScrollContentSizeChange = useCallback(() => {
-    if (isThreadOpen) scrollRef.current?.scrollToEnd({ animated: true });
-  }, [isThreadOpen]);
-
   const handleCopyMessage = useCallback((text: string) => {
     void Clipboard.setStringAsync(text);
   }, []);
@@ -331,7 +296,7 @@ export default function HomeScreen() {
   }, [startQuizSession, wrongQuizItems]);
 
   return (
-    <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: palette.background }]}>
+    <View style={[styles.container, { backgroundColor: palette.background }]}>
       <Stack.Screen options={{ title: isThreadOpen ? displayedChatTitle : '' }} />
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'line.3.horizontal' : MenuIcon}
@@ -350,29 +315,24 @@ export default function HomeScreen() {
         interpolator="ios"
         offset={COMPOSER_MIN_HEIGHT}
         style={styles.container}
-        textInputNativeID={CHAT_INPUT_NATIVE_ID}
+        textInputNativeID={process.env.EXPO_OS === 'ios' ? undefined : CHAT_INPUT_NATIVE_ID}
       >
-        <KeyboardChatScrollView
-          ref={scrollRef}
+        <ScrollView
           style={styles.scroll}
           contentContainerStyle={[
             styles.scrollContent,
             isThreadOpen && styles.threadScrollContent,
-            { paddingBottom: Math.max(composerHeight, 16) + 16 },
+            { paddingBottom: Math.max(composerHeight, COMPOSER_MIN_HEIGHT) + COMPOSER_SPACING * 2 + 16 },
           ]}
           contentInsetAdjustmentBehavior="automatic"
-          extraContentPadding={composerExtraPaddingSV}
-          freeze={!isFocused}
+          automaticallyAdjustKeyboardInsets={false}
           keyboardDismissMode="none"
-          keyboardLiftBehavior="whenAtEnd"
           keyboardShouldPersistTaps="handled"
-          offset={keyboardOffset}
-          onContentSizeChange={handleScrollContentSizeChange}
           showsVerticalScrollIndicator
         >
           {selectedChatId != null ? (
             <View style={[styles.chatHeaderAd, { backgroundColor: palette.background }]}>
-              <AdMobBanner320x50 />
+              <AdMobNativeAd compact />
             </View>
           ) : null}
           {isThreadOpen ? (
@@ -525,96 +485,40 @@ export default function HomeScreen() {
                 ))}
               </View>
               <View style={[styles.divider, { backgroundColor: palette.border }]} />
-              <Text style={[styles.exampleTitle, styles.adTitle, { color: palette.text }]}>{t('common.ad')}</Text>
-              <View style={styles.adSlot}>
-                <AdMobBanner300x250 />
-              </View>
+              <AdMobNativeAd />
             </Animated.View>
           )}
-        </KeyboardChatScrollView>
-        {selectedChatId != null ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={isQuizMode ? t('quiz.startEdit') : t('quiz.startQuiz')}
-            hitSlop={8}
-            onPress={toggleQuizMode}
-            style={({ pressed }) => [
-              styles.startQuizButton,
-              { backgroundColor: quizStartButtonBackground, borderColor: quizStartButtonBackground },
-              pressed && { opacity: 0.78 },
-            ]}
-          >
-            <Ionicons
-              name={isQuizMode ? 'create-outline' : 'play-circle-outline'}
-              size={23}
-              color={quizStartButtonForeground}
-            />
-            <Text style={[styles.startQuizButtonText, { color: quizStartButtonForeground }]}>
-              {isQuizMode ? t('quiz.startEdit') : t('quiz.startQuiz')}
-            </Text>
-          </Pressable>
-        ) : null}
-        <KeyboardStickyView
-          enabled={isFocused}
-          offset={{ opened: keyboardOffset }}
-          onLayout={(event) => handleComposerLayout(event.nativeEvent.layout.height)}
-          style={[styles.composerShell, { backgroundColor: palette.background }]}
-        >
-          <View
-            pointerEvents="none"
-            style={[
-              styles.composerKeyboardBackground,
-              {
-                height: Math.max(keyboardOffset, 0),
-                bottom: -Math.max(keyboardOffset, 0),
-                backgroundColor: palette.background,
-              },
-            ]}
-          />
-          <View style={styles.composerRow}>
-            <View
-              style={[
-                styles.inputBox,
-                {
-                  minHeight: inputHeight,
-                  backgroundColor: palette.gray200,
-                  borderColor: palette.border,
-                },
-              ]}
-            >
-              <TextInput
-                ref={inputRef}
-                nativeID={CHAT_INPUT_NATIVE_ID}
-                multiline
-                {...CHAT_COMPOSER_TEXT_INPUT_PROPS}
-                maxLength={1000}
-                onChangeText={setMessage}
-                onContentSizeChange={handleContentSizeChange}
-                onSubmitEditing={handleSend}
-                placeholder={t('chat.messagePlaceholder')}
-                placeholderTextColor={palette.placeholder}
-                returnKeyType="send"
-                selectionColor={palette.primary}
-                cursorColor={palette.primary}
-                style={[styles.messageInput, { color: palette.text }]}
-                submitBehavior="submit"
-                value={message}
-              />
-            </View>
+        </ScrollView>
+        <KeyboardStickyView enabled={isFocused} style={styles.composerShell}>
+          {selectedChatId != null ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('chat.sendButton')}
-              disabled={!canSend}
+              accessibilityLabel={isQuizMode ? t('quiz.startEdit') : t('quiz.startQuiz')}
               hitSlop={8}
-              onPress={handleSend}
-              style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
+              onPress={toggleQuizMode}
+              style={({ pressed }) => [
+                styles.startQuizButton,
+                { backgroundColor: quizStartButtonBackground, borderColor: quizStartButtonBackground },
+                pressed && { opacity: 0.78 },
+              ]}
             >
-              <Ionicons name="send" size={28} color={canSend ? palette.primary : palette.iconMuted} />
+              <Ionicons
+                name={isQuizMode ? 'create-outline' : 'play-circle-outline'}
+                size={23}
+                color={quizStartButtonForeground}
+              />
+              <Text style={[styles.startQuizButtonText, { color: quizStartButtonForeground }]}>
+                {isQuizMode ? t('quiz.startEdit') : t('quiz.startQuiz')}
+              </Text>
             </Pressable>
-          </View>
+          ) : null}
+          <Animated.View style={composerSafeAreaStyle}>
+            <ChatComposer ref={inputRef} value={message} canSend={canSend}
+              onChangeText={setMessage} onSend={handleSend} onHeightChange={handleComposerLayout} />
+          </Animated.View>
         </KeyboardStickyView>
       </KeyboardGestureArea>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -630,7 +534,8 @@ const styles = StyleSheet.create({
   startQuizButton: {
     position: 'absolute',
     right: 16,
-    bottom: 76,
+    bottom: '100%',
+    marginBottom: COMPOSER_SPACING,
     zIndex: 10,
     minHeight: 52,
     flexDirection: 'row',
@@ -779,51 +684,12 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginTop: 24,
   },
-  adSlot: {
-    width: '100%',
-    height: 250,
-    marginTop: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  adTitle: {
-    marginHorizontal: 32,
-    marginTop: 24,
-  },
   composerShell: {
-    paddingHorizontal: 12,
-    paddingTop: COMPOSER_TOP_PADDING,
-  },
-  composerKeyboardBackground: {
     position: 'absolute',
     left: 0,
     right: 0,
-  },
-  composerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 10,
-  },
-  inputBox: {
-    flex: 1,
-    borderRadius: 22,
-    borderWidth: StyleSheet.hairlineWidth,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  messageInput: {
-    fontSize: 16,
-    lineHeight: COMPOSER_LINE_HEIGHT,
-    maxHeight: COMPOSER_MAX_INPUT_HEIGHT,
-    paddingVertical: 12,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendButtonDisabled: {
-    opacity: 0.65,
+    bottom: 0,
+    paddingHorizontal: 12,
+    paddingTop: COMPOSER_SPACING,
   },
 });

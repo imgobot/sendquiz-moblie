@@ -67,12 +67,15 @@ export default function AppMenuPanelContent(props: AppMenuPanelContentProps) {
             </Section>
           </List>
           <Toolbar.Content>
-            <ToolbarItem placement="topBarLeading">
-              <Text modifiers={[
-                font({ size: 20, weight: 'heavy' }),
-                lineLimit(1),
-                fixedSize({ horizontal: true, vertical: false }),
-              ]}>SEND</Text>
+            <ToolbarItem placement="principal">
+              <HStack modifiers={[frame({ maxWidth: Infinity, alignment: 'leading' })]}>
+                <Text modifiers={[
+                  font({ size: 20, weight: 'heavy' }),
+                  lineLimit(1),
+                  fixedSize({ horizontal: true, vertical: false }),
+                ]}>SEND</Text>
+                <Spacer />
+              </HStack>
             </ToolbarItem>
             <ToolbarItem placement="bottomBar">
               <HStack modifiers={[frame({ maxWidth: Infinity, alignment: 'leading' })]}>
