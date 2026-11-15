@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -93,54 +93,57 @@ export default function ProfileManageScreen() {
   }, [router]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: palette.card }]} edges={[]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: palette.card }]} edges={['bottom']}>
       <Stack.Screen options={{ title: t('profile.title') }} />
-      <View style={styles.content}>
-        <View style={styles.field}>
-          <Text style={[styles.label, { color: palette.muted }]}>{t('profile.email')}</Text>
-          <Text style={[styles.value, { color: palette.text }]}>{email}</Text>
+      <ScrollView style={styles.container}
+        contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
+        <View style={styles.content}>
+          <View style={styles.field}>
+            <Text style={[styles.label, { color: palette.muted }]}>{t('profile.email')}</Text>
+            <Text style={[styles.value, { color: palette.text }]}>{email}</Text>
+          </View>
+
+          <View style={styles.field}>
+            <Text style={[styles.label, { color: palette.muted }]}>{t('profile.nickname')}</Text>
+            {editingNickname ? (
+              <View style={styles.editRow}>
+                <TextInput
+                  style={[styles.input, { borderBottomColor: palette.primary, color: palette.text }]}
+                  value={newNickname}
+                  onChangeText={setNewNickname}
+                  selectionColor={palette.primary}
+                  cursorColor={palette.primary}
+                  autoFocus
+                />
+                <TouchableOpacity onPress={handleUpdateNickname}>
+                  <Text style={[styles.saveButton, { color: palette.primary }]}>{t('common.save')}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.editRow}>
+                <Text style={[styles.value, { color: palette.text }]}>{nickname}</Text>
+                <TouchableOpacity onPress={startEditNickname}>
+                  <Text style={[styles.editButton, { color: palette.primary }]}>{t('common.edit')}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          {hasPasswordLogin ? (
+            <TouchableOpacity
+              style={[styles.passwordButton, { borderTopColor: palette.border }]}
+              onPress={openPasswordAuth}
+            >
+              <Text style={[styles.passwordButtonText, { color: palette.text }]}>{t('profile.changePassword')}</Text>
+              <Ionicons name="chevron-forward" size={20} color={palette.muted} />
+            </TouchableOpacity>
+          ) : null}
         </View>
 
-        <View style={styles.field}>
-          <Text style={[styles.label, { color: palette.muted }]}>{t('profile.nickname')}</Text>
-          {editingNickname ? (
-            <View style={styles.editRow}>
-              <TextInput
-                style={[styles.input, { borderBottomColor: palette.primary, color: palette.text }]}
-                value={newNickname}
-                onChangeText={setNewNickname}
-                selectionColor={palette.primary}
-                cursorColor={palette.primary}
-                autoFocus
-              />
-              <TouchableOpacity onPress={handleUpdateNickname}>
-                <Text style={[styles.saveButton, { color: palette.primary }]}>{t('common.save')}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.editRow}>
-              <Text style={[styles.value, { color: palette.text }]}>{nickname}</Text>
-              <TouchableOpacity onPress={startEditNickname}>
-                <Text style={[styles.editButton, { color: palette.primary }]}>{t('common.edit')}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
-        {hasPasswordLogin ? (
-          <TouchableOpacity
-            style={[styles.passwordButton, { borderTopColor: palette.border }]}
-            onPress={openPasswordAuth}
-          >
-            <Text style={[styles.passwordButtonText, { color: palette.text }]}>{t('profile.changePassword')}</Text>
-            <Ionicons name="chevron-forward" size={20} color={palette.muted} />
-          </TouchableOpacity>
-        ) : null}
-      </View>
-
-      <TouchableOpacity style={[styles.deleteButton, { borderColor: palette.error }]} onPress={handleDeleteAccount}>
-        <Text style={[styles.deleteButtonText, { color: palette.error }]}>{t('profile.withdraw')}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={[styles.deleteButton, { borderColor: palette.error }]} onPress={handleDeleteAccount}>
+          <Text style={[styles.deleteButtonText, { color: palette.error }]}>{t('profile.withdraw')}</Text>
+        </TouchableOpacity>
+      </ScrollView>
       <AuthModal
         initialMode="change-password"
         visible={showPasswordAuth}

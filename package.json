@@ -21,6 +21,8 @@
     "eb:deploy:android": "APP_ENV=production USE_CCACHE=0 ANDROID_GOOGLE_SERVICES_FILE=\"$PWD/google-services.json\" EAS_LOCAL_BUILD_ARTIFACTS_DIR=\"$HOME/Desktop/APP_BUILD_ASSET/send\" eas build -p android --profile production-android --local"
   },
   "dependencies": {
+    "@expo/material-symbols": "^0.1.1",
+    "@expo/ui": "~58.0.28",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "12.0.1",
@@ -41,10 +43,10 @@
     "expo-system-ui": "~58.0.7",
     "expo-tracking-transparency": "~58.1.0",
     "expo-web-browser": "~58.0.8",
-    "i18next": "^25.7.4",
+    "i18next": "^26.7.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-i18next": "^16.5.3",
+    "react-i18next": "^17.1.13",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-get-random-values": "~1.11.0",
@@ -61,7 +63,7 @@
     "@types/node": "^24.12.4",
     "@types/react": "~19.3.0",
     "oxlint": "^1.93.0",
-    "typescript": "~6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   },
   "reanimated": {

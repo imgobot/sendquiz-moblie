@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Alert, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -33,18 +33,16 @@ export default function FeedbackScreen() {
   }, [message, router, t]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: palette.card }]} edges={[]}>
-      <Stack.Screen
-        options={{
-          title: t('feedback.title'),
-          headerRight: () => (
-            <TouchableOpacity onPress={handleSubmit} disabled={isSubmitting}>
-              <Text style={[styles.submitText, { color: palette.primary }, isSubmitting && { color: palette.muted }]}>{t('common.send')}</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <View style={styles.content}>
+    <SafeAreaView style={[styles.container, { backgroundColor: palette.card }]} edges={['bottom']}>
+      <Stack.Screen options={{ title: t('feedback.title') }} />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button onPress={handleSubmit} disabled={isSubmitting}
+          tintColor={palette.primary}>
+          {t('common.send')}
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
         <TextInput
           style={[styles.input, { color: palette.text }]}
           value={message}
@@ -57,14 +55,13 @@ export default function FeedbackScreen() {
           textAlignVertical="top"
           autoFocus
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  submitText: { fontSize: 16, fontWeight: '600' },
-  content: { flex: 1, padding: 20 },
+  content: { flexGrow: 1, padding: 20 },
   input: { flex: 1, fontSize: 16, lineHeight: 24 },
 });

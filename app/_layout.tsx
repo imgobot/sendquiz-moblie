@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { ThemeProvider as NavigationThemeProvider } from "expo-router/react-navigation";
-import { Stack } from 'expo-router';
+import { usePathname } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
 import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -8,10 +9,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../src/i18n';
 import { LanguageProvider } from '../src/contexts/LanguageContext';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
+import AppDrawerContent from '../src/components/navigation/AppDrawerContent';
+import { QuizThreadProvider } from '../src/contexts/QuizThreadContext';
 import { startAdMobIfNeeded } from '../src/utils/adMobStartup';
 
-function RootStack() {
-  const { navigationTheme, palette, statusBarStyle } = useTheme();
+function RootNavigator() {
+  const pathname = usePathname();
+  const { navigationTheme, palette } = useTheme();
 
   useEffect(() => {
     void (async () => {
@@ -34,19 +38,18 @@ function RootStack() {
       <NavigationThemeProvider value={navigationTheme}>
         <SafeAreaProvider>
           <KeyboardProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: palette.background },
-                statusBarStyle,
-              }}
-            >
-              <Stack.Screen name="(drawer)" />
-              <Stack.Screen
-                name="(stacks)"
-                options={{ animation: 'slide_from_right' }}
-              />
-            </Stack>
+            <QuizThreadProvider>
+              <Drawer
+                drawerContent={(props) => <AppDrawerContent {...props} />}
+                screenOptions={{
+                  headerShown: false,
+                  swipeEnabled: pathname === '/',
+                  drawerStyle: { backgroundColor: palette.background },
+                }}
+              >
+                <Drawer.Screen name="(main)" />
+              </Drawer>
+            </QuizThreadProvider>
           </KeyboardProvider>
         </SafeAreaProvider>
       </NavigationThemeProvider>
@@ -58,7 +61,7 @@ export default function RootLayout() {
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <RootStack />
+        <RootNavigator />
       </ThemeProvider>
     </LanguageProvider>
   );

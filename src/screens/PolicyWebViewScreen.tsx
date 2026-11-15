@@ -35,6 +35,7 @@ export default function PolicyWebViewScreen() {
       <Stack.Screen options={{ title: document === 'privacy' ? t('settings.privacy') : t('settings.terms') }} />
       <WebView
         source={source}
+        contentInsetAdjustmentBehavior="automatic"
         style={styles.webView}
         startInLoadingState
         javaScriptEnabled

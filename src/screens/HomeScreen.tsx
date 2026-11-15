@@ -3,7 +3,9 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as StoreReview from 'expo-store-review';
 import { useIsFocused } from "expo-router/react-navigation";
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useNavigation, useRouter } from 'expo-router';
+import type { DrawerNavigationProp } from 'expo-router/drawer';
+import type { ParamListBase } from 'expo-router/react-navigation';
 import { type ElementRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -21,7 +23,9 @@ import Animated, { FadeIn, FadeOut, LinearTransition, useSharedValue, withTiming
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { AdMobBanner300x250, AdMobBanner320x50 } from '../components/ads';
-import HeaderSettingsButton from '../components/navigation/HeaderSettingsButton';
+import MenuIcon from '@expo/material-symbols/menu.xml';
+import AccountIcon from '@expo/material-symbols/account_circle.xml';
+import EditIcon from '@expo/material-symbols/edit.xml';
 import { msg } from '../constants/appMessages';
 import { CHAT_COMPOSER_TEXT_INPUT_PROPS } from '../constants/textInput';
 import { useQuizThread, type ThreadMessage } from '../contexts/QuizThreadContext';
@@ -69,7 +73,7 @@ function renderAnswerRevealText(item: ThreadMessage, answerLabel: string) {
   );
 }
 
-export default function HomeTabScreen() {
+export default function HomeScreen() {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isQuizMode, setIsQuizMode] = useState(false);
@@ -80,6 +84,7 @@ export default function HomeTabScreen() {
   const [inputHeight, setInputHeight] = useState(COMPOSER_MIN_HEIGHT);
   const [composerHeight, setComposerHeight] = useState(0);
   const router = useRouter();
+  const drawer = useNavigation<DrawerNavigationProp<ParamListBase>>('/');
   const isFocused = useIsFocused();
   const scrollRef = useRef<ElementRef<typeof KeyboardChatScrollView>>(null);
   const inputRef = useRef<TextInputInstance>(null);
@@ -327,40 +332,27 @@ export default function HomeTabScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: palette.background }]}>
-      <Stack.Screen
-        options={{
-          title: isThreadOpen ? displayedChatTitle : '',
-          headerRight: () => {
-            if (!isThreadOpen) return <HeaderSettingsButton />;
-            if (isQuizMode) return null;
-
-            return (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('quiz.renameChatTitle')}
-                hitSlop={8}
-                onPress={openRenameScreen}
-                style={styles.headerAction}
-              >
-                <Ionicons name="pencil-outline" size={23} color={palette.text} />
-              </Pressable>
-            );
-          },
-        }}
-      />
+      <Stack.Screen options={{ title: isThreadOpen ? displayedChatTitle : '' }} />
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'line.3.horizontal' : MenuIcon}
+          accessibilityLabel={t('menu.open')} onPress={() => drawer.openDrawer()} />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        {!isThreadOpen ? (
+          <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'person.crop.circle' : AccountIcon}
+            accessibilityLabel={t('tab.settings')} onPress={() => router.push('/settings')} />
+        ) : !isQuizMode ? (
+          <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'pencil' : EditIcon}
+            accessibilityLabel={t('quiz.renameChatTitle')} onPress={openRenameScreen} />
+        ) : null}
+      </Stack.Toolbar>
       <KeyboardGestureArea
         interpolator="ios"
         offset={COMPOSER_MIN_HEIGHT}
         style={styles.container}
         textInputNativeID={CHAT_INPUT_NATIVE_ID}
       >
-        {selectedChatId != null ? (
-          <View style={[styles.chatHeaderAd, { backgroundColor: palette.background }]}>
-            <AdMobBanner320x50 />
-          </View>
-        ) : null}
         <KeyboardChatScrollView
-          automaticallyAdjustContentInsets={false}
           ref={scrollRef}
           style={styles.scroll}
           contentContainerStyle={[
@@ -368,7 +360,7 @@ export default function HomeTabScreen() {
             isThreadOpen && styles.threadScrollContent,
             { paddingBottom: Math.max(composerHeight, 16) + 16 },
           ]}
-          contentInsetAdjustmentBehavior="never"
+          contentInsetAdjustmentBehavior="automatic"
           extraContentPadding={composerExtraPaddingSV}
           freeze={!isFocused}
           keyboardDismissMode="none"
@@ -378,6 +370,11 @@ export default function HomeTabScreen() {
           onContentSizeChange={handleScrollContentSizeChange}
           showsVerticalScrollIndicator
         >
+          {selectedChatId != null ? (
+            <View style={[styles.chatHeaderAd, { backgroundColor: palette.background }]}>
+              <AdMobBanner320x50 />
+            </View>
+          ) : null}
           {isThreadOpen ? (
             <Animated.View
               entering={FadeIn.duration(180)}
@@ -623,12 +620,6 @@ export default function HomeTabScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  headerAction: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scroll: { flex: 1 },
   chatHeaderAd: {
     width: '100%',

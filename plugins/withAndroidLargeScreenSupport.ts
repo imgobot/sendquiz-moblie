@@ -1,8 +1,10 @@
+type ConfigPlugin = import("expo/config-plugins").ConfigPlugin;
+
 const {
   AndroidConfig,
   createRunOncePlugin,
   withAndroidManifest,
-} = require("expo/config-plugins");
+} = require("expo/config-plugins") as typeof import("expo/config-plugins");
 
 // Android 16 (targetSdk 36) warns that large-screen form factors can ignore
 // orientation/resizeability restrictions. Keep the iOS orientation locked via
@@ -20,23 +22,23 @@ const ACTIVITY_ATTRS_TO_REMOVE = [
   "android:minAspectRatio",
 ];
 
-function toArray(value) {
+function toArray<T>(value: T | T[] | null | undefined): T[] {
   if (!value) return [];
   return Array.isArray(value) ? value : [value];
 }
 
-function removeAttrsIfTarget(activity) {
+function removeAttrsIfTarget(activity: { $?: Record<string, string | undefined> }) {
   if (!activity || !activity.$) return;
 
   const name = activity.$["android:name"];
-  if (!TARGET_ACTIVITY_NAMES.has(name)) return;
+  if (!name || !TARGET_ACTIVITY_NAMES.has(name)) return;
 
   for (const attr of ACTIVITY_ATTRS_TO_REMOVE) {
     if (attr in activity.$) delete activity.$[attr];
   }
 }
 
-const withAndroidLargeScreenSupport = (config) => {
+const withAndroidLargeScreenSupport: ConfigPlugin = (config) => {
   return withAndroidManifest(config, (config) => {
     const manifest = config.modResults;
     const mainApplication =

@@ -133,7 +133,9 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: palette.background }]} edges={[]}>
       <Stack.Screen options={{ title: t('tab.settings') }} />
-      <ScrollView style={styles.scroll} keyboardShouldPersistTaps="always">
+      <ScrollView style={styles.scroll}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="always">
         <Section title={t('settings.sectionAccount')} palette={palette}>
         <SettingItem
           icon="person-outline"

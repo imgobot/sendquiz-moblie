@@ -1,6 +1,4 @@
 import type { ExpoConfig } from 'expo/config';
-import fs from 'fs';
-import path from 'path';
 
 const DEFAULT_APP_VERSION = '5.2026.001';
 const DEFAULT_APP_BASE_URL = 'https://sendquiz.imgobot.com';
@@ -41,36 +39,6 @@ const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_PROGUARD_RULES = `
 }
 `;
 
-function parseEnvFile(filename: string) {
-  const filePath = path.join(__dirname, filename);
-  if (!fs.existsSync(filePath)) return {};
-
-  const contents = fs.readFileSync(filePath, 'utf8');
-  const parsed: Record<string, string> = {};
-
-  for (const line of contents.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-
-    const equalsIndex = trimmed.indexOf('=');
-    if (equalsIndex === -1) continue;
-
-    const key = trimmed.slice(0, equalsIndex).trim();
-    let value = trimmed.slice(equalsIndex + 1).trim();
-
-    if (
-      (value.startsWith('"') && value.endsWith('"') && value.length >= 2) ||
-      (value.startsWith("'") && value.endsWith("'") && value.length >= 2)
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    if (key) parsed[key] = value;
-  }
-
-  return parsed;
-}
-
 function normalizeEnv(value?: string) {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
@@ -88,44 +56,32 @@ function isEasBuild() {
 }
 
 function isProductionBuild() {
-  return isEasBuild() || process.env.APP_ENV === 'production';
+  if (process.env.APP_ENV) return process.env.APP_ENV === 'production';
+  if (process.env.EAS_BUILD_PROFILE === 'development') return false;
+  return isEasBuild();
 }
 
 function isLocalAdMobEnabled() {
   return process.env.is_admob === '1';
 }
 
-function applyExclusiveEnv({ preferredFile, excludeFile }: { preferredFile: string; excludeFile: string }) {
-  const excluded = parseEnvFile(excludeFile);
-  for (const key of Object.keys(excluded)) {
-    delete process.env[key];
-  }
-
-  const preferred = parseEnvFile(preferredFile);
-  for (const [key, value] of Object.entries(preferred)) {
-    process.env[key] = value;
-  }
-}
-
-if (isProductionBuild()) {
-  applyExclusiveEnv({ preferredFile: '.env', excludeFile: '.env.development' });
-} else {
-  applyExclusiveEnv({ preferredFile: '.env.development', excludeFile: '.env' });
-}
-
 export default (): ExpoConfig => {
+  const isProduction = isProductionBuild();
+  const appIdentifier = isProduction ? 'com.send.quiz' : 'com.send.quiz.dev';
   const apiBaseUrl = normalizeBaseUrl(process.env.APP_BASE_URL) ?? DEFAULT_APP_BASE_URL;
-  const isAdMobEnabled = isProductionBuild() || isLocalAdMobEnabled();
+  const isAdMobEnabled = isProduction || isLocalAdMobEnabled();
   const easProjectId = normalizeEnv(process.env.EAS_PROJECT_ID) ?? EAS_PROJECT_ID;
   const iosGoogleServicesFile =
-    normalizeEnv(process.env.IOS_GOOGLE_SERVICES_FILE) ?? './GoogleService-Info.plist';
+    normalizeEnv(process.env.IOS_GOOGLE_SERVICES_FILE) ??
+    (isProduction ? './GoogleService-Info.plist' : undefined);
   const androidGoogleServicesFile =
-    normalizeEnv(process.env.ANDROID_GOOGLE_SERVICES_FILE) ?? './google-services.json';
+    normalizeEnv(process.env.ANDROID_GOOGLE_SERVICES_FILE) ??
+    (isProduction ? './google-services.json' : undefined);
 
   return {
-    name: 'SEND',
+    name: isProduction ? 'SEND' : 'SEND(dev)',
     slug: 'send',
-    scheme: 'send',
+    scheme: isProduction ? 'send' : 'send-dev',
     version: DEFAULT_APP_VERSION,
     orientation: 'portrait',
     userInterfaceStyle: 'automatic',
@@ -135,15 +91,14 @@ export default (): ExpoConfig => {
       icon: './assets/images/ios-icon.png',
       backgroundColor: ROOT_VIEW_BACKGROUND_COLOR,
       supportsTablet: false,
-      bundleIdentifier: 'com.send.quiz',
+      bundleIdentifier: appIdentifier,
       googleServicesFile: iosGoogleServicesFile,
       appleTeamId: 'KTGYAM53PK',
-      entitlements: {
-        'com.apple.developer.declared-age-range': true,
-      },
+      entitlements: isProduction
+        ? { 'com.apple.developer.declared-age-range': true }
+        : {},
       infoPlist: {
         CFBundleAllowMixedLocalizations: true,
-        UIDesignRequiresCompatibility: true,
         UIViewControllerBasedStatusBarAppearance: true,
       },
       
@@ -154,7 +109,7 @@ export default (): ExpoConfig => {
     },
     android: {
       icon: './assets/images/icon.png',
-      package: 'com.send.quiz',
+      package: appIdentifier,
       userInterfaceStyle: 'automatic',
       googleServicesFile: androidGoogleServicesFile,
       adaptiveIcon: {
@@ -170,7 +125,7 @@ export default (): ExpoConfig => {
       'expo-status-bar',
       './plugins/withAndroidLargeScreenSupport',
       'expo-font',
-      '@react-native-firebase/app',
+      ...(iosGoogleServicesFile || androidGoogleServicesFile ? ['@react-native-firebase/app'] : []),
       [
         'expo-localization',
         {

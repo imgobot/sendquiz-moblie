@@ -1,68 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { msg } from '../../constants/appMessages';
-import { useQuizThread } from '../../contexts/QuizThreadContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import type { QuizChat } from '../../services/quizApi';
-import { listAccessibleQuizChats } from '../../services/quizRepository';
-import { isAuthRequiredError } from '../../utils/errors';
 
-type AppMenuPanelContentProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+import { useMenuPanelContent, type AppMenuPanelContentProps } from './useMenuPanelContent';
 
-export default function AppMenuPanelContent({ isOpen, onClose }: AppMenuPanelContentProps) {
-  const router = useRouter();
+export default function AppMenuPanelContent(props: AppMenuPanelContentProps) {
+  const { onClose } = props;
+  const { chats, isLoading, messageText, openChat, handleNewQuiz, handleOpenSettings } = useMenuPanelContent(props);
   const { isDark, palette } = useTheme();
   const { t } = useTranslation();
-  const { selectChat, startNewChat } = useQuizThread();
-  const [chats, setChats] = useState<QuizChat[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [messageText, setMessageText] = useState<string | null>(null);
   const newQuizButtonBackground = isDark ? '#FFFFFF' : '#111111';
   const newQuizButtonForeground = isDark ? '#111111' : '#FFFFFF';
-
-  const loadChats = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setMessageText(null);
-      setChats(await listAccessibleQuizChats());
-    } catch (error) {
-      setChats([]);
-      setMessageText(isAuthRequiredError(error) ? msg(t, 'QUIZ_LOGIN_REQUIRED') : msg(t, 'QUIZ_LOAD_CHATS_FAILED'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    if (isOpen) {
-      loadChats();
-    }
-  }, [isOpen, loadChats]);
-
-  const openChat = useCallback(
-    (chat: QuizChat) => {
-      onClose();
-      void selectChat(chat);
-    },
-    [onClose, selectChat]
-  );
-
-  const handleNewQuiz = useCallback(() => {
-    startNewChat();
-    onClose();
-  }, [onClose, startNewChat]);
-
-  const handleOpenSettings = useCallback(() => {
-    onClose();
-    router.push('/settings');
-  }, [onClose, router]);
 
   const renderChat = useCallback(
     ({ item }: { item: QuizChat }) => (

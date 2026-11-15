@@ -1,10 +1,11 @@
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import type { NativeStackNavigationProp } from 'expo-router/native-stack';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { msg } from '../constants/appMessages';
@@ -140,26 +141,17 @@ export default function RenameChatScreen() {
   }, [deleteCurrentChat, isSubmitting, router, selectedChatId, t]);
 
   return (
-    <SafeAreaView edges={[]} style={[styles.container, { backgroundColor: palette.background }]}>
-      <Stack.Screen
-        options={{
-          title: '',
-          headerRight: () =>
-            selectedChatId == null ? null : (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.delete')}
-                disabled={isSubmitting}
-                hitSlop={8}
-                onPress={handleDelete}
-                style={styles.headerDeleteButton}
-              >
-                <Ionicons name="trash-outline" size={23} color={palette.error} />
-              </Pressable>
-            ),
-        }}
-      />
-      <View style={styles.content}>
+    <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: palette.background }]}>
+      <Stack.Screen options={{ title: '' }} />
+      <Stack.Toolbar placement="right">
+        {selectedChatId != null && (
+          <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'trash' : DeleteIcon}
+            accessibilityLabel={t('common.delete')} disabled={isSubmitting}
+            tintColor={palette.error} onPress={handleDelete} />
+        )}
+      </Stack.Toolbar>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
         <Text style={[styles.title, { color: palette.text }]}>{t('quiz.renameChatInputTitle')}</Text>
         <View style={styles.field}>
           <Text style={[styles.label, { color: RENAME_CHAT_CTA_BLUE }]}>{t('quiz.chatNameLabel')}</Text>
@@ -194,7 +186,7 @@ export default function RenameChatScreen() {
             ) : null}
           </View>
         </View>
-      </View>
+      </ScrollView>
       <View style={[styles.submitButtonContainer, { bottom: keyboardHeight }]}>
         <Pressable
           accessibilityRole="button"
@@ -223,7 +215,7 @@ export default function RenameChatScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 24,
   },
@@ -232,12 +224,6 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '800',
     letterSpacing: 0,
-  },
-  headerDeleteButton: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   field: {
     marginTop: 44,
