@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackHeaderProps } from 'expo-router/build/react-navigation/native-stack';
+import type { NativeStackHeaderProps } from 'expo-router/native-stack';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

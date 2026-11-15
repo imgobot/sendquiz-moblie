@@ -56,7 +56,7 @@ export function syncMetaAudienceNetworkTracking(contents: string): string {
   nextContents = ensureImport(nextContents, 'FBAudienceNetwork');
   nextContents = ensureImport(nextContents, 'AppTrackingTransparency');
   nextContents = nextContents.replace(
-    /(@main\nclass AppDelegate: ExpoAppDelegate \{\n)/,
+    /(@main\nclass AppDelegate: ExpoAppDelegate(?:,\s*\w+)*\s*\{\n)/,
     `$1${META_TRACKING_HELPER_BLOCK}`,
   );
 

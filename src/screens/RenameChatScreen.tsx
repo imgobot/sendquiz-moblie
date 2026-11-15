@@ -1,6 +1,7 @@
+import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useNavigation, useRouter } from 'expo-router';
-import type { NativeStackNavigationProp } from 'expo-router/build/react-navigation/native-stack';
+import type { NativeStackNavigationProp } from 'expo-router/native-stack';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -22,7 +23,7 @@ export default function RenameChatScreen() {
   const { t } = useTranslation();
   const { palette } = useTheme();
   const { chatTitle, deleteCurrentChat, selectedChatId, setChatTitle } = useQuizThread();
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const isExitingRef = useRef(false);
   const isFocusedRef = useRef(false);
   const [name, setName] = useState(chatTitle || t('quiz.newChatTitle'));

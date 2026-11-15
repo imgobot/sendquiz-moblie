@@ -1,8 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "resolvePackageJsonExports": false,
-    "resolvePackageJsonImports": false,
     "types": ["node"]
   }
 }

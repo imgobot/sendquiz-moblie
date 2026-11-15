@@ -1,3 +1,4 @@
+import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as StoreReview from 'expo-store-review';
@@ -7,13 +8,12 @@ import { type ElementRef, useCallback, useEffect, useMemo, useRef, useState } fr
 import {
   ActivityIndicator,
   Alert,
-  NativeSyntheticEvent,
   Platform,
   Pressable,
   Text,
   StyleSheet,
   TextInput,
-  TextInputContentSizeChangeEventData,
+  TextInputContentSizeChangeEvent,
   View,
 } from 'react-native';
 import { KeyboardChatScrollView, KeyboardGestureArea, KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -82,7 +82,7 @@ export default function HomeTabScreen() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const scrollRef = useRef<ElementRef<typeof KeyboardChatScrollView>>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const quizMessageIdRef = useRef(0);
   const composerExtraPaddingSV = useSharedValue(0);
   const {
@@ -169,7 +169,7 @@ export default function HomeTabScreen() {
   }, [router]);
 
   const handleContentSizeChange = useCallback(
-    (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => {
+    (event: TextInputContentSizeChangeEvent) => {
       const nextHeight = Math.min(
         COMPOSER_MAX_INPUT_HEIGHT,
         Math.max(COMPOSER_MIN_HEIGHT, Math.ceil(event.nativeEvent.contentSize.height))

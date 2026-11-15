@@ -3,28 +3,26 @@ import fs from 'fs';
 import path from 'path';
 
 const DEFAULT_APP_VERSION = '5.2026.001';
-const DEFAULT_APP_BASE_URL = 'https://sendquiz.net';
+const DEFAULT_APP_BASE_URL = 'https://sendquiz.imgobot.com';
 const ROOT_VIEW_BACKGROUND_COLOR = '#FFFFFF';
 const EAS_PROJECT_ID = '3ae1c128-d77a-4bbc-ba89-b1c880a0a793';
-const IOS_TRACKING_PERMISSION_DEFAULT =
-  '맞춤형 광고와 성과 측정을 위해 다른 앱과 웹사이트의 활동 정보를 사용할 수 있어요.';
 const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_MAVEN_REPOS = [
   'https://android-sdk.is.com/',
   'https://artifact.bytedance.com/repository/pangle/',
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_DEPENDENCIES = [
-  'com.google.ads.mediation:inmobi:11.2.0.0',
-  'com.google.ads.mediation:ironsource:9.4.1.0',
-  'com.google.ads.mediation:vungle:7.7.2.0',
-  'com.google.ads.mediation:facebook:6.21.0.2',
-  'com.google.ads.mediation:pangle:8.0.0.4.0',
+  'com.google.ads.mediation:inmobi:11.5.1.0',
+  'com.google.ads.mediation:ironsource:9.8.0.0',
+  'com.google.ads.mediation:vungle:7.8.0.0',
+  'com.google.ads.mediation:facebook:6.22.0.1',
+  'com.google.ads.mediation:pangle:8.4.0.5.0',
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_IOS_PODS = [
-  { name: 'GoogleMobileAdsMediationInMobi' },
-  { name: 'GoogleMobileAdsMediationIronSource' },
-  { name: 'GoogleMobileAdsMediationVungle' },
-  { name: 'GoogleMobileAdsMediationFacebook' },
-  { name: 'GoogleMobileAdsMediationPangle' },
+  { name: 'GoogleMobileAdsMediationInMobi', version: '11.5.0.0' },
+  { name: 'GoogleMobileAdsMediationIronSource', version: '9.8.0.0.0' },
+  { name: 'GoogleMobileAdsMediationVungle', version: '7.7.8.0' },
+  { name: 'GoogleMobileAdsMediationFacebook', version: '6.22.1.0' },
+  { name: 'GoogleMobileAdsMediationPangle', version: '8.4.0.8.0' },
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_PROGUARD_RULES = `
 -keep class com.google.android.gms.internal.consent_sdk.** { *; }
@@ -186,20 +184,15 @@ export default (): ExpoConfig => {
         'expo-build-properties',
         {
           ios: {
-            useFrameworks: 'static',
+            useFrameworks: 'dynamic',
             ccacheEnabled: true,
-            forceStaticLinking: ['RNFBApp', 'RNFBAnalytics'],
             extraPods: [
-              { name: 'GoogleUtilities', modular_headers: true },
               ...GOOGLE_MOBILE_ADS_MEDIATION_IOS_PODS,
             ],
             privacyManifestAggregationEnabled: true,
           },
           android: {
-            compileSdkVersion: 36,
-            targetSdkVersion: 36,
-            buildToolsVersion: '36.0.0',
-            kotlinVersion: '2.1.20',
+            kotlinVersion: '2.4.0',
             extraMavenRepos: GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_MAVEN_REPOS,
             extraProguardRules: GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_PROGUARD_RULES,
           },

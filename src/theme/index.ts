@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, type Theme as NavigationTheme } from "expo-router/react-navigation";
-import type { ColorSchemeName } from 'react-native';
+import type { Appearance, ColorSchemeName } from 'react-native';
 import { APP_PALETTE, DARK_PALETTE } from '../constants/palette';
 import type { Palette } from '../constants/palette';
 
@@ -14,7 +14,7 @@ export function isThemeMode(value: string | null): value is ThemeMode {
   return value === 'system' || value === 'dark' || value === 'light';
 }
 
-export function getAppearanceScheme(themeMode: ThemeMode): ColorSchemeName {
+export function getAppearanceScheme(themeMode: ThemeMode): Parameters<typeof Appearance.setColorScheme>[0] {
   return themeMode === 'system' ? 'unspecified' : themeMode;
 }
 

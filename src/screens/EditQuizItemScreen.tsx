@@ -1,6 +1,7 @@
+import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import type { NativeStackNavigationProp } from 'expo-router/build/react-navigation/native-stack';
+import type { NativeStackNavigationProp } from 'expo-router/native-stack';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -29,8 +30,8 @@ export default function EditQuizItemScreen() {
   const { t } = useTranslation();
   const { palette } = useTheme();
   const { deleteThreadQuizItem, updateThreadQuizItem } = useQuizThread();
-  const questionInputRef = useRef<TextInput>(null);
-  const answerInputRef = useRef<TextInput>(null);
+  const questionInputRef = useRef<TextInputInstance>(null);
+  const answerInputRef = useRef<TextInputInstance>(null);
   const focusedFieldRef = useRef<EditQuizField | null>(null);
   const isExitingRef = useRef(false);
   const isFocusedRef = useRef(false);
