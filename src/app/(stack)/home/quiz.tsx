@@ -1,10 +1,9 @@
+import { AdMobNativeAd } from '../../../components/ads';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as StoreReview from 'expo-store-review';
 import { useIsFocused } from "expo-router/react-navigation";
-import { Stack, useNavigation, useRouter } from 'expo-router';
-import type { DrawerNavigationProp } from 'expo-router/drawer';
-import type { ParamListBase } from 'expo-router/react-navigation';
+import { Stack, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -20,16 +19,13 @@ import { KeyboardGestureArea, KeyboardStickyView, useReanimatedKeyboardAnimation
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { AdMobNativeAd } from '../components/ads';
-import MenuIcon from '@expo/material-symbols/menu.xml';
-import AccountIcon from '@expo/material-symbols/account_circle.xml';
 import EditIcon from '@expo/material-symbols/edit.xml';
-import { msg } from '../constants/appMessages';
-import ChatComposer from '../components/chat/ChatComposer';
-import { CHAT_INPUT_NATIVE_ID, COMPOSER_MIN_HEIGHT, type ChatComposerHandle } from '../components/chat/ChatComposer.types';
-import { useQuizThread, type ThreadMessage } from '../contexts/QuizThreadContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { isAuthRequiredError } from '../utils/errors';
+import { msg } from '../../../constants/appMessages';
+import ChatComposer from '../../../components/chat/ChatComposer';
+import { CHAT_INPUT_NATIVE_ID, COMPOSER_MIN_HEIGHT, type ChatComposerHandle } from '../../../components/chat/ChatComposer.types';
+import { useQuizThread, type ThreadMessage } from '../../../contexts/QuizThreadContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { isAuthRequiredError } from '../../../utils/errors';
 
 const COMPOSER_SPACING = 8;
 
@@ -66,7 +62,7 @@ function renderAnswerRevealText(item: ThreadMessage, answerLabel: string) {
   );
 }
 
-export default function HomeScreen() {
+export default function QuizScreen() {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isQuizMode, setIsQuizMode] = useState(false);
@@ -76,7 +72,6 @@ export default function HomeScreen() {
   const [quizSessionMessages, setQuizSessionMessages] = useState<ThreadMessage[]>([]);
   const [composerHeight, setComposerHeight] = useState(0);
   const router = useRouter();
-  const drawer = useNavigation<DrawerNavigationProp<ParamListBase>>('/');
   const isFocused = useIsFocused();
   const inputRef = useRef<ChatComposerHandle>(null);
   const quizMessageIdRef = useRef(0);
@@ -163,7 +158,7 @@ export default function HomeScreen() {
   );
 
   const openRenameScreen = useCallback(() => {
-    router.push('/rename-chat');
+    router.push('/home/rename-chat');
   }, [router]);
 
   const handleComposerLayout = useCallback((height: number) => {
@@ -259,7 +254,7 @@ export default function HomeScreen() {
   const openEditQuizItemScreen = useCallback(
     (itemId: number, questionText: string, answerText: string) => {
       router.push({
-        pathname: '/edit-quiz-item',
+        pathname: '/home/edit-quiz-item',
         params: {
           itemId: String(itemId),
           questionText,
@@ -298,19 +293,12 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: palette.background }]}>
       <Stack.Screen options={{ title: isThreadOpen ? displayedChatTitle : '' }} />
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'line.3.horizontal' : MenuIcon}
-          accessibilityLabel={t('menu.open')} onPress={() => drawer.openDrawer()} />
-      </Stack.Toolbar>
-      <Stack.Toolbar placement="right">
-        {!isThreadOpen ? (
-          <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'person.crop.circle' : AccountIcon}
-            accessibilityLabel={t('tab.settings')} onPress={() => router.push('/settings')} />
-        ) : !isQuizMode ? (
+      {isThreadOpen && !isQuizMode && (
+        <Stack.Toolbar placement="right">
           <Stack.Toolbar.Button icon={process.env.EXPO_OS === 'ios' ? 'pencil' : EditIcon}
             accessibilityLabel={t('quiz.renameChatTitle')} onPress={openRenameScreen} />
-        ) : null}
-      </Stack.Toolbar>
+        </Stack.Toolbar>
+      )}
       <KeyboardGestureArea
         interpolator="ios"
         offset={COMPOSER_MIN_HEIGHT}
@@ -321,7 +309,6 @@ export default function HomeScreen() {
           style={styles.scroll}
           contentContainerStyle={[
             styles.scrollContent,
-            isThreadOpen && styles.threadScrollContent,
             { paddingBottom: Math.max(composerHeight, COMPOSER_MIN_HEIGHT) + COMPOSER_SPACING * 2 + 16 },
           ]}
           contentInsetAdjustmentBehavior="automatic"
@@ -330,11 +317,7 @@ export default function HomeScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator
         >
-          {selectedChatId != null ? (
-            <View style={[styles.chatHeaderAd, { backgroundColor: palette.background }]}>
-              <AdMobNativeAd />
-            </View>
-          ) : null}
+          <AdMobNativeAd />
           {isThreadOpen ? (
             <Animated.View
               entering={FadeIn.duration(180)}
@@ -484,8 +467,6 @@ export default function HomeScreen() {
                   </View>
                 ))}
               </View>
-              <View style={[styles.divider, { backgroundColor: palette.border }]} />
-              <AdMobNativeAd />
             </Animated.View>
           )}
         </ScrollView>
@@ -525,12 +506,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scroll: { flex: 1 },
-  chatHeaderAd: {
-    marginHorizontal: -16,
-    minHeight: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   startQuizButton: {
     position: 'absolute',
     right: 16,
@@ -551,10 +526,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '700',
   },
-  scrollContent: { paddingHorizontal: 0 },
-  threadScrollContent: {
+  scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
+    gap: 16,
   },
   threadContent: {
     gap: 8,
@@ -645,8 +620,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   promptTitle: {
-    marginHorizontal: 16,
-    marginTop: 24,
+    marginTop: 8,
     fontSize: 34,
     lineHeight: 41,
     fontWeight: '700',
@@ -654,7 +628,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   exampleBox: {
-    marginHorizontal: 16,
     marginTop: 24,
     borderRadius: 16,
     paddingHorizontal: 16,
@@ -678,11 +651,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     lineHeight: 22,
-  },
-  divider: {
-    width: '100%',
-    height: StyleSheet.hairlineWidth,
-    marginTop: 24,
   },
   composerShell: {
     position: 'absolute',

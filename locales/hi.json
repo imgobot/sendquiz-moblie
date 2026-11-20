@@ -21,6 +21,7 @@
     "settings": "सेटिंग्स"
   },
   "home": {
+    "quizPreview": "यह एक क्विज़ है।",
     "promptTitle": "क्विज़ इनपुट",
     "exampleTitle": "उदाहरण",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "प्रश्न और उत्तर दर्ज करें",
     "emptyWrongTitle": "कोई गलत उत्तर नहीं!",
     "emptyWrongSub": "क्विज़ में गलत हुए प्रश्न यहाँ अपने आप जुड़ेंगे"
-  },
-  "menu": {
-    "open": "मेनू खोलें",
-    "close": "मेनू बंद करें",
-    "recent": "हाल के"
   },
   "navigation": {
     "goBack": "वापस जाएँ"

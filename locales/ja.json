@@ -21,6 +21,7 @@
     "settings": "設定"
   },
   "home": {
+    "quizPreview": "クイズです。",
     "promptTitle": "クイズ入力",
     "exampleTitle": "例",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "質問と答えを入力してください",
     "emptyWrongTitle": "間違いはありません！",
     "emptyWrongSub": "クイズで間違えた問題がここに自動で追加されます"
-  },
-  "menu": {
-    "open": "メニューを開く",
-    "close": "メニューを閉じる",
-    "recent": "最近"
   },
   "navigation": {
     "goBack": "戻る"

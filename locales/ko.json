@@ -21,6 +21,7 @@
     "settings": "설정"
   },
   "home": {
+    "quizPreview": "퀴즈입니다.",
     "promptTitle": "퀴즈를\n입력해보세요",
     "exampleTitle": "예시",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "resumePrompt": "이전에 풀던 문제를 이어서 풀까요?",
     "startOver": "처음부터 풀기",
     "continue": "이어서 풀기"
-  },
-  "menu": {
-    "open": "메뉴 열기",
-    "close": "메뉴 닫기",
-    "recent": "최근"
   },
   "navigation": {
     "goBack": "뒤로 가기"

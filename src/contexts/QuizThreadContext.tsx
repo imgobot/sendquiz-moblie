@@ -65,6 +65,7 @@ export function QuizThreadProvider({ children }: { children: ReactNode }) {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
   const [isLoadingThread, setIsLoadingThread] = useState(false);
   const [threadErrorKey, setThreadErrorKey] = useState<string | null>(null);
+  const threadVersion = useRef(0);
   const messageIdRef = useRef(0);
 
   const nextMessageId = useCallback(() => {
@@ -78,10 +79,12 @@ export function QuizThreadProvider({ children }: { children: ReactNode }) {
       if (!text) return;
 
       setThreadErrorKey(null);
+      const version = threadVersion.current;
       let activeChatId = selectedChatId;
 
       if (activeChatId == null) {
         const chat = await createAccessibleQuizChat(text.slice(0, CHAT_NAME_MAX_LENGTH));
+        if (version !== threadVersion.current) return;
         activeChatId = chat.id;
         setSelectedChatId(chat.id);
         setChatTitle(chat.name);
@@ -91,6 +94,7 @@ export function QuizThreadProvider({ children }: { children: ReactNode }) {
 
       if (pendingQuestion) {
         const item = await createAccessibleQuizItem(activeChatId, pendingQuestion, text);
+        if (version !== threadVersion.current) return;
         const assistantMessage = createQuizItemMessage(item);
         setMessages((prev) => [...prev, userMessage, assistantMessage]);
         setPendingQuestion(null);
@@ -110,6 +114,7 @@ export function QuizThreadProvider({ children }: { children: ReactNode }) {
   );
 
   const selectChat = useCallback(async (chat: QuizChat) => {
+    const version = ++threadVersion.current;
     setSelectedChatId(chat.id);
     setChatTitle(chat.name);
     setPendingQuestion(null);
@@ -119,15 +124,17 @@ export function QuizThreadProvider({ children }: { children: ReactNode }) {
 
     try {
       const items = await listAccessibleQuizItems(chat.id);
+      if (version !== threadVersion.current) return;
       setMessages(items.map(createQuizItemMessage));
     } catch {
-      setThreadErrorKey('quiz.loadItemsFailed');
+      if (version === threadVersion.current) setThreadErrorKey('quiz.loadItemsFailed');
     } finally {
-      setIsLoadingThread(false);
+      if (version === threadVersion.current) setIsLoadingThread(false);
     }
   }, []);
 
   const startNewChat = useCallback(() => {
+    threadVersion.current += 1;
     setSelectedChatId(null);
     setChatTitle('');
     setPendingQuestion(null);

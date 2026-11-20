@@ -1,11 +1,12 @@
+import { AdMobNativeAd } from '../../../components/ads';
 import { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { API_BASE_URL } from '../constants/api';
-import { useTheme } from '../contexts/ThemeContext';
+import { API_BASE_URL } from '../../../constants/api';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 type PolicyDocument = 'privacy' | 'terms';
 
@@ -33,6 +34,9 @@ export default function PolicyWebViewScreen() {
   return (
     <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: palette.background }]}>
       <Stack.Screen options={{ title: document === 'privacy' ? t('settings.privacy') : t('settings.terms') }} />
+      <View style={{ paddingHorizontal: 16 }}>
+        <AdMobNativeAd />
+      </View>
       <WebView
         source={source}
         contentInsetAdjustmentBehavior="automatic"

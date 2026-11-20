@@ -1,3 +1,4 @@
+import { AdMobNativeAd } from '../../../components/ads';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
 import type { TextInputInstance } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,11 +9,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { msg } from '../constants/appMessages';
-import { TEXT_INPUT_NO_SUGGESTIONS_PROPS } from '../constants/textInput';
-import { useQuizThread } from '../contexts/QuizThreadContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { isAuthRequiredError } from '../utils/errors';
+import { msg } from '../../../constants/appMessages';
+import { TEXT_INPUT_NO_SUGGESTIONS_PROPS } from '../../../constants/textInput';
+import { useQuizThread } from '../../../contexts/QuizThreadContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { isAuthRequiredError } from '../../../utils/errors';
 
 const EDIT_QUIZ_CTA_BLUE = '#3182F6';
 const EDIT_QUIZ_CTA_TEXT = '#FFFFFF';
@@ -192,6 +193,7 @@ export default function EditQuizItemScreen() {
       </Stack.Toolbar>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}
         contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
+        <AdMobNativeAd />
         <Text style={[styles.title, { color: palette.text }]}>{t('quiz.editItemTitle')}</Text>
         <View style={styles.field}>
           <Text style={[styles.label, { color: EDIT_QUIZ_CTA_BLUE }]}>{t('quiz.editItemQuestionLabel')}</Text>

@@ -1,11 +1,12 @@
+import { AdMobNativeAd } from '../../../components/ads';
 import { useCallback, useState } from 'react';
 import { ScrollView, Alert, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { submitFeedback } from '../services/feedbackApi';
-import { useTheme } from '../contexts/ThemeContext';
-import { msg } from '../constants/appMessages';
+import { submitFeedback } from '../../../services/feedbackApi';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { msg } from '../../../constants/appMessages';
 
 export default function FeedbackScreen() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function FeedbackScreen() {
       </Stack.Toolbar>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}
         contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
+        <AdMobNativeAd />
         <TextInput
           style={[styles.input, { color: palette.text }]}
           value={message}

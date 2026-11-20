@@ -1,14 +1,15 @@
+import { AdMobNativeAd } from '../../../components/ads';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
-import { getMyProfile, updateMyNickname, withdrawMyAccount } from '../services/profileApi';
-import { msg } from '../constants/appMessages';
-import { clearAccessToken } from '../services/authedFetch';
-import AuthModal from '../components/AuthModal';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getMyProfile, updateMyNickname, withdrawMyAccount } from '../../../services/profileApi';
+import { msg } from '../../../constants/appMessages';
+import { clearAccessToken } from '../../../services/authedFetch';
+import AuthModal from '../../../components/AuthModal';
 
 export default function ProfileManageScreen() {
   const router = useRouter();
@@ -98,6 +99,7 @@ export default function ProfileManageScreen() {
       <ScrollView style={styles.container}
         contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled">
         <View style={styles.content}>
+          <AdMobNativeAd />
           <View style={styles.field}>
             <Text style={[styles.label, { color: palette.muted }]}>{t('profile.email')}</Text>
             <Text style={[styles.value, { color: palette.text }]}>{email}</Text>

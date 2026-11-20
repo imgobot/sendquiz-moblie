@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
 import { ThemeProvider as NavigationThemeProvider } from "expo-router/react-navigation";
-import { usePathname } from 'expo-router';
-import { Drawer } from 'expo-router/drawer';
+import { Stack } from 'expo-router';
 import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import '../src/i18n';
-import { LanguageProvider } from '../src/contexts/LanguageContext';
-import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
-import AppDrawerContent from '../src/components/navigation/AppDrawerContent';
-import { QuizThreadProvider } from '../src/contexts/QuizThreadContext';
-import { startAdMobIfNeeded } from '../src/utils/adMobStartup';
+import '../i18n';
+import AppStack from '../components/navigation/AppStack';
+import { LanguageProvider } from '../contexts/LanguageContext';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import { QuizThreadProvider } from '../contexts/QuizThreadContext';
+import { startAdMobIfNeeded } from '../utils/adMobStartup';
+
+export const unstable_settings = { anchor: '(tabs)' };
 
 function RootNavigator() {
-  const pathname = usePathname();
   const { navigationTheme, palette } = useTheme();
 
   useEffect(() => {
@@ -39,16 +39,9 @@ function RootNavigator() {
         <SafeAreaProvider>
           <KeyboardProvider>
             <QuizThreadProvider>
-              <Drawer
-                drawerContent={(props) => <AppDrawerContent {...props} />}
-                screenOptions={{
-                  headerShown: false,
-                  swipeEnabled: pathname === '/',
-                  drawerStyle: { backgroundColor: palette.background },
-                }}
-              >
-                <Drawer.Screen name="(main)" />
-              </Drawer>
+              <AppStack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </AppStack>
             </QuizThreadProvider>
           </KeyboardProvider>
         </SafeAreaProvider>

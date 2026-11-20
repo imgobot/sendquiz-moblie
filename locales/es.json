@@ -21,6 +21,7 @@
     "settings": "Ajustes"
   },
   "home": {
+    "quizPreview": "Es un cuestionario.",
     "promptTitle": "Entrada del quiz",
     "exampleTitle": "Ejemplos",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "Ingresa una pregunta y una respuesta",
     "emptyWrongTitle": "¡No hay errores!",
     "emptyWrongSub": "Las preguntas que falles aparecerán aquí automáticamente"
-  },
-  "menu": {
-    "open": "Abrir menú",
-    "close": "Cerrar menú",
-    "recent": "Recientes"
   },
   "navigation": {
     "goBack": "Volver"

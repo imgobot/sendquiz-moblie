@@ -21,6 +21,7 @@
     "settings": "设置"
   },
   "home": {
+    "quizPreview": "这是一个测验。",
     "promptTitle": "测验输入",
     "exampleTitle": "示例",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "请输入题目和答案",
     "emptyWrongTitle": "没有错题！",
     "emptyWrongSub": "测验中答错的题目会自动添加到这里"
-  },
-  "menu": {
-    "open": "打开菜单",
-    "close": "关闭菜单",
-    "recent": "最近"
   },
   "navigation": {
     "goBack": "返回"

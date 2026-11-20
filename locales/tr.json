@@ -21,6 +21,7 @@
     "settings": "Ayarlar"
   },
   "home": {
+    "quizPreview": "Bu bir quiz.",
     "promptTitle": "Quiz girişi",
     "exampleTitle": "Örnekler",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "Bir soru ve cevap girin",
     "emptyWrongTitle": "Yanlış cevap yok!",
     "emptyWrongSub": "Yanlış yaptığınız sorular burada otomatik görünür"
-  },
-  "menu": {
-    "open": "Menüyü aç",
-    "close": "Menüyü kapat",
-    "recent": "Son"
   },
   "navigation": {
     "goBack": "Geri dön"

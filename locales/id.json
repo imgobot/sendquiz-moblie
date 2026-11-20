@@ -21,6 +21,7 @@
     "settings": "Pengaturan"
   },
   "home": {
+    "quizPreview": "Ini adalah kuis.",
     "promptTitle": "Input kuis",
     "exampleTitle": "Contoh",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "emptyEditSub": "Masukkan soal dan jawaban",
     "emptyWrongTitle": "Tidak ada jawaban salah!",
     "emptyWrongSub": "Soal yang Anda jawab salah akan muncul di sini otomatis"
-  },
-  "menu": {
-    "open": "Buka menu",
-    "close": "Tutup menu",
-    "recent": "Terbaru"
   },
   "navigation": {
     "goBack": "Kembali"

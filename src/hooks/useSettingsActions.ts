@@ -48,14 +48,14 @@ export function useSettingsActions() {
 
   const handleProfilePress = useCallback(() => {
     if (isLoggedIn) {
-      router.push('/profile-manage');
+      router.push('/settings/profile-manage');
     } else {
       setShowAuthModal(true);
     }
   }, [isLoggedIn, router]);
-  const handleOpenTerms = useCallback(() => router.push({ pathname: '/policy-webview', params: { document: 'terms' } }), [router]);
-  const handleOpenPrivacy = useCallback(() => router.push({ pathname: '/policy-webview', params: { document: 'privacy' } }), [router]);
-  const handleOpenFeedback = useCallback(() => router.push('/feedback'), [router]);
+  const handleOpenTerms = useCallback(() => router.push({ pathname: '/settings/policy-webview', params: { document: 'terms' } }), [router]);
+  const handleOpenPrivacy = useCallback(() => router.push({ pathname: '/settings/policy-webview', params: { document: 'privacy' } }), [router]);
+  const handleOpenFeedback = useCallback(() => router.push('/settings/feedback'), [router]);
   const handleLoginPress = useCallback(() => setShowAuthModal(true), []);
   const handleLogout = useCallback(async () => {
     try {

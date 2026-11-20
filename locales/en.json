@@ -21,6 +21,7 @@
     "settings": "Settings"
   },
   "home": {
+    "quizPreview": "This is a quiz.",
     "promptTitle": "Quiz input",
     "exampleTitle": "Examples",
     "exampleQuiz": {
@@ -220,11 +221,6 @@
     "resumePrompt": "Would you like to continue where you left off?",
     "startOver": "Start Over",
     "continue": "Continue"
-  },
-  "menu": {
-    "open": "Open menu",
-    "close": "Close menu",
-    "recent": "Recent"
   },
   "navigation": {
     "goBack": "Go back"
