@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../contexts/ThemeContext';
 
-const CONTENT_HEIGHT = 50;
+const CONTENT_HEIGHT = 30;
 
 export type TabHeaderProps = {
   title: string;
@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     height: CONTENT_HEIGHT,
-    paddingHorizontal: 20,
   },
   title: {
     flex: 1,

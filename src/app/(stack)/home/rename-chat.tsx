@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
     flexGrow: 1,
-    paddingHorizontal: 24,
     paddingTop: 24,
   },
   title: {

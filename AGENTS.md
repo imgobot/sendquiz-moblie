@@ -2,6 +2,10 @@
 
 This Expo app targets Android and iOS only. Web is out of scope.
 
+## Layout
+
+- Use a 16-point horizontal inset for page content on every screen. AppStack applies the shared `PAGE_INSET` to each page. Apply it once at the content boundary of standalone modals and keep nested navigators and page sections free of additional page-level horizontal spacing.
+
 ## Tooling and validation
 
 - Use npm and update `package-lock.json` with dependency changes.

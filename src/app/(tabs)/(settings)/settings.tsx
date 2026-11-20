@@ -7,6 +7,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import AuthModal from '../../../components/AuthModal';
 import { TabHeader } from '../../../components/navigation/TabHeader';
 import { TabContentAd } from '../../../components/ads/TabContentAd';
+import { PAGE_INSET } from '../../../constants/layout';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTheme, type ThemeMode } from '../../../contexts/ThemeContext';
 import { LANGUAGES, useSettingsActions } from '../../../hooks/useSettingsActions';
@@ -112,15 +113,15 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 },
+  content: { paddingTop: 16, paddingBottom: 32 },
   section: { marginTop: 24 },
-  caption: { marginLeft: 16, marginBottom: 7, fontSize: 13 },
+  caption: { marginBottom: 7, fontSize: 13 },
   group: { borderRadius: 14, overflow: 'hidden' },
-  row: { flexDirection: 'row', alignItems: 'center', paddingLeft: 16, gap: 12 },
-  rowContent: { flex: 1, minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 6, paddingRight: 16, paddingVertical: 9 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  rowContent: { flex: 1, minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 9 },
   label: { flex: 1, fontSize: 16 },
   value: { flexShrink: 1, fontSize: 15 },
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'center', padding: 28 },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'center', paddingVertical: 28, ...PAGE_INSET },
   sheet: { borderRadius: 18, maxHeight: '80%', padding: 16 },
   sheetTitle: { fontSize: 17, fontWeight: '600', marginBottom: 8, textAlign: 'center' },
   option: { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingHorizontal: 8 },

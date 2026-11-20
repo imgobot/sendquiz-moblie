@@ -158,7 +158,7 @@ export default function ProfileManageScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20 },
+  content: { paddingVertical: 20 },
   field: { marginBottom: 24 },
   label: { fontSize: 13, marginBottom: 8 },
   value: { fontSize: 16 },
@@ -168,6 +168,6 @@ const styles = StyleSheet.create({
   saveButton: { fontSize: 14, fontWeight: '600' },
   passwordButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderTopWidth: 0.5 },
   passwordButtonText: { fontSize: 16 },
-  deleteButton: { marginHorizontal: 20, marginTop: 'auto', marginBottom: 40, paddingVertical: 14, alignItems: 'center', borderRadius: 12, borderWidth: 1 },
+  deleteButton: { marginTop: 'auto', marginBottom: 40, paddingVertical: 14, alignItems: 'center', borderRadius: 12, borderWidth: 1 },
   deleteButtonText: { fontSize: 16, fontWeight: '600' },
 });

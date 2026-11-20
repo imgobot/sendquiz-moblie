@@ -64,6 +64,6 @@ export default function FeedbackScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flexGrow: 1, padding: 20 },
+  content: { flexGrow: 1, paddingVertical: 20 },
   input: { flex: 1, fontSize: 16, lineHeight: 24 },
 });

@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { parseEnv } from 'node:util';
 import type { ExpoConfig } from 'expo/config';
 
 const DEFAULT_APP_VERSION = '11.2026.001';
@@ -60,7 +63,9 @@ function isProductionBuild() {
 export default (): ExpoConfig => {
   const isProduction = isProductionBuild();
   const appIdentifier = isProduction ? 'com.send.quiz' : 'com.send.quiz.dev';
-  const apiBaseUrl = normalizeBaseUrl(process.env.APP_BASE_URL) ?? DEFAULT_APP_BASE_URL;
+  const envFile = join(__dirname, isProduction ? '.env.production' : '.env.local');
+  const env = existsSync(envFile) ? parseEnv(readFileSync(envFile, 'utf8')) : {};
+  const apiBaseUrl = normalizeBaseUrl(env.APP_BASE_URL) ?? DEFAULT_APP_BASE_URL;
   const easProjectId = normalizeEnv(process.env.EAS_PROJECT_ID) ?? EAS_PROJECT_ID;
   const iosGoogleServicesFile =
     normalizeEnv(process.env.IOS_GOOGLE_SERVICES_FILE) ??
@@ -183,6 +188,10 @@ export default (): ExpoConfig => {
     },
     extra: {
       apiBaseUrl,
+      nativeAdUnitIds: {
+        ios: env.EXPO_PUBLIC_ADMOB_NATIVE_IOS_ID,
+        android: env.EXPO_PUBLIC_ADMOB_NATIVE_ANDROID_ID,
+      },
       eas: {
         projectId: easProjectId,
       },

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Theme as NavigationTheme } from "expo-router/react-navigation";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Appearance, useColorScheme } from 'react-native';
+import { Appearance, Platform, PlatformColor, useColorScheme } from 'react-native';
 import { APP_PALETTE } from '../constants/palette';
 import type { Palette } from '../constants/palette';
 import {
@@ -85,3 +85,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 }
 
 export const useTheme = () => useContext(ThemeContext);
+
+export function useButtonBlue() {
+  const { isDark } = useTheme();
+  return Platform.OS === 'ios' ? PlatformColor('systemBlue') : isDark ? '#0A84FF' : '#007AFF';
+}

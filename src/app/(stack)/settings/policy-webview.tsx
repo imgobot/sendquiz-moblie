@@ -34,9 +34,7 @@ export default function PolicyWebViewScreen() {
   return (
     <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: palette.background }]}>
       <Stack.Screen options={{ title: document === 'privacy' ? t('settings.privacy') : t('settings.terms') }} />
-      <View style={{ paddingHorizontal: 16 }}>
-        <AdMobNativeAd />
-      </View>
+      <AdMobNativeAd />
       <WebView
         source={source}
         contentInsetAdjustmentBehavior="automatic"

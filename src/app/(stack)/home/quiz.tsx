@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   startQuizButton: {
     position: 'absolute',
-    right: 16,
+    right: 0,
     bottom: '100%',
     marginBottom: COMPOSER_SPACING,
     zIndex: 10,
@@ -527,7 +527,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   scrollContent: {
-    paddingHorizontal: 16,
     paddingTop: 16,
     gap: 16,
   },
@@ -657,7 +656,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: 12,
     paddingTop: COMPOSER_SPACING,
   },
 });

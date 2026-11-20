@@ -7,6 +7,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 import { API_BASE_URL } from '../constants/api';
 import { getAccessToken, setAccessToken } from '../services/authedFetch';
+import { PAGE_INSET } from '../constants/layout';
 import { useTheme } from '../contexts/ThemeContext';
 
 const AUTH_SESSION_MESSAGE_TYPE = 'send.authSession';
@@ -211,11 +212,10 @@ export default function AuthModal({ initialMode = 'login', visible, onClose, onA
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
+  container: { flex: 1, ...PAGE_INSET, backgroundColor: '#000000' },
   header: {
     alignItems: 'flex-end',
     backgroundColor: '#000000',
-    paddingHorizontal: 12,
   },
   closeButton: {
     alignItems: 'center',
