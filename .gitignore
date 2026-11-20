@@ -29,7 +29,7 @@ Thumbs.db
 *.bundle
 
 # iOS
-ios/
+/ios/
 ios/Pods/
 ios/Podfile.lock
 ios/build/
@@ -38,7 +38,7 @@ ios/build/
 *.xcuserstate
 
 # Android
-android/
+/android/
 android/.gradle/
 android/.idea/
 android/build/

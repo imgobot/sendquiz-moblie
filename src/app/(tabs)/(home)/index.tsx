@@ -1,5 +1,5 @@
 import { TabHeader } from '../../../components/navigation/TabHeader';
-import { TabContentAd } from '../../../components/ads/TabContentAd';
+import { AdMobNativeAd } from '../../../components/ads';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ export default function HomeScreen() {
       <FlatList
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.list}
-        ListHeaderComponent={TabContentAd}
+        ListHeaderComponent={AdMobNativeAd}
         data={chats}
         keyExtractor={chat => String(chat.id)}
         renderItem={({ item }) => {

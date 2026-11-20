@@ -31,6 +31,7 @@
     }
   },
   "settings": {
+    "adPrivacy": "广告隐私设置",
     "sectionAccount": "账户",
     "sectionAppInfo": "应用信息",
     "sectionSupport": "支持",

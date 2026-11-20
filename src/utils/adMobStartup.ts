@@ -1,59 +1,30 @@
-import { NativeModules } from 'react-native';
-import mobileAds, {
-  AdsConsent,
-  AdsConsentStatus,
-  MaxAdContentRating,
-} from 'react-native-google-mobile-ads';
-import { setAdMobReady } from './adMobReady';
-import { requestTrackingPermissionIfNeeded } from './trackingTransparency';
+import { readUSOptOut } from './usPrivacy';
+import { setAdvertiserTrackingEnabled, setDataProcessingOptions } from '@react-native-google-mobile-ads/facebook';
+import { requireNativeModule } from 'expo';
+import { getTrackingPermissionsAsync } from 'expo-tracking-transparency';
+import mobileAds, { AdsConsent, type AdsConsentInfo } from 'react-native-google-mobile-ads';
 
-type MediationPrivacyModule = {
-  sync(allowsPersonalizedAds: boolean): void;
-};
+const mediation = requireNativeModule<{ setUSPrivacy(optedOut: boolean): void }>('MediationPrivacy');
+let initialization: ReturnType<ReturnType<typeof mobileAds>['initialize']> | undefined;
 
-const { MediationPrivacyModule } = NativeModules as {
-  MediationPrivacyModule: MediationPrivacyModule;
-};
+export async function applyConsent(info: AdsConsentInfo) {
+  const optedOut = readUSOptOut(await AdsConsent.getGppString());
+  if (optedOut !== undefined) {
+    mediation.setUSPrivacy(optedOut);
+    setDataProcessingOptions(optedOut ? ['LDU'] : []);
+  }
 
-let adMobStartupStarted = false;
-
-async function gatherConsentInfo() {
-  try {
-    return await AdsConsent.gatherConsent();
-  } catch (error) {
-    console.warn('ADMOB_CONSENT_GATHER_FAILED', error);
-    return AdsConsent.getConsentInfo();
+  if (info.canRequestAds) {
+    const { granted } = await getTrackingPermissionsAsync();
+    setAdvertiserTrackingEnabled(granted);
+    initialization ??= mobileAds().initialize().catch(error => {
+      initialization = undefined;
+      throw error;
+    });
+    await initialization;
   }
 }
 
-async function syncMediationPrivacy() {
-  const consentInfo = await AdsConsent.getConsentInfo();
-  if (consentInfo.status === AdsConsentStatus.NOT_REQUIRED) {
-    MediationPrivacyModule.sync(true);
-    return;
-  }
-
-  const choices = await AdsConsent.getUserChoices();
-  MediationPrivacyModule.sync(
-    choices.storeAndAccessInformationOnDevice && choices.selectPersonalisedAds,
-  );
-}
-
-export async function startAdMobIfNeeded() {
-  if (adMobStartupStarted) return;
-  adMobStartupStarted = true;
-
-  const { canRequestAds } = await gatherConsentInfo();
-  if (!canRequestAds) {
-    setAdMobReady(false);
-    return;
-  }
-
-  await requestTrackingPermissionIfNeeded();
-  await syncMediationPrivacy();
-  await mobileAds().setRequestConfiguration({
-    maxAdContentRating: MaxAdContentRating.MA,
-  });
-  await mobileAds().initialize();
-  setAdMobReady(true);
+export function gatherConsent() {
+  return AdsConsent.gatherConsent().catch(() => AdsConsent.getConsentInfo());
 }

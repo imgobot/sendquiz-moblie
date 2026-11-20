@@ -4,28 +4,17 @@ import { Stack } from 'expo-router';
 import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AdsProvider } from '../contexts/AdsContext';
 import '../i18n';
 import AppStack from '../components/navigation/AppStack';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 import { QuizThreadProvider } from '../contexts/QuizThreadContext';
-import { startAdMobIfNeeded } from '../utils/adMobStartup';
 
 export const unstable_settings = { anchor: '(tabs)' };
 
 function RootNavigator() {
   const { navigationTheme, palette } = useTheme();
-
-  useEffect(() => {
-    void (async () => {
-      try {
-        await startAdMobIfNeeded();
-      } catch (error) {
-        console.warn('ADMOB_STARTUP_FAILED', error);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(palette.background).catch((error) => {
@@ -36,7 +25,7 @@ function RootNavigator() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.background }}>
       <NavigationThemeProvider value={navigationTheme}>
-        <SafeAreaProvider>
+        <AdsProvider>
           <KeyboardProvider>
             <QuizThreadProvider>
               <AppStack>
@@ -44,7 +33,7 @@ function RootNavigator() {
               </AppStack>
             </QuizThreadProvider>
           </KeyboardProvider>
-        </SafeAreaProvider>
+        </AdsProvider>
       </NavigationThemeProvider>
     </GestureHandlerRootView>
   );

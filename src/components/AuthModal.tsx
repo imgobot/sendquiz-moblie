@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { resolveScheme } from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, Pressable, StyleSheet, View } from 'react-native';
@@ -11,10 +12,8 @@ import { PAGE_INSET } from '../constants/layout';
 import { useTheme } from '../contexts/ThemeContext';
 
 const AUTH_SESSION_MESSAGE_TYPE = 'send.authSession';
-const MOBILE_OAUTH_RETURN_URL = 'send://auth/oauth';
+const MOBILE_OAUTH_RETURN_URL = `${resolveScheme({})}://auth/oauth`;
 const OAUTH_START_PATH_PATTERN = /^\/api\/auth\/oauth\/web\/(google|apple)\/start$/;
-
-WebBrowser.maybeCompleteAuthSession();
 
 type AuthMode = 'change-password' | 'login';
 

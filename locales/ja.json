@@ -31,6 +31,7 @@
     }
   },
   "settings": {
+    "adPrivacy": "広告のプライバシー設定",
     "sectionAccount": "アカウント",
     "sectionAppInfo": "アプリ情報",
     "sectionSupport": "サポート",

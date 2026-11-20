@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AuthModal from '../../../components/AuthModal';
 import { TabHeader } from '../../../components/navigation/TabHeader';
-import { TabContentAd } from '../../../components/ads/TabContentAd';
+import { AdMobNativeAd } from '../../../components/ads';
+import { useAds } from '../../../contexts/AdsContext';
 import { PAGE_INSET } from '../../../constants/layout';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTheme, type ThemeMode } from '../../../contexts/ThemeContext';
@@ -52,6 +53,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const { isDark, palette, themeMode, setThemeMode } = useTheme();
   const { language, setLanguage } = useLanguage();
+  const ads = useAds();
   const actions = useSettingsActions();
   const [picker, setPicker] = useState<'language' | 'theme' | null>(null);
   const options = picker === 'theme'
@@ -64,7 +66,7 @@ export default function SettingsScreen() {
       <TabHeader title={t('tab.settings')} />
       <ScrollView
         contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
-        <TabContentAd />
+        <AdMobNativeAd />
         <Section title={t('settings.sectionAccount')}>
           <Row icon="person-circle-outline" label={t('settings.profileManage')} onPress={actions.handleProfilePress} />
         </Section>
@@ -78,6 +80,8 @@ export default function SettingsScreen() {
         <Section title={t('settings.sectionSupport')}>
           <Row icon="document-text-outline" label={t('settings.terms')} divider onPress={actions.handleOpenTerms} />
           <Row icon="hand-left-outline" label={t('settings.privacy')} divider onPress={actions.handleOpenPrivacy} />
+          {ads.privacyOptionsRequired && <Row icon="options-outline" label={t('settings.adPrivacy')} divider
+            onPress={() => { void ads.openPrivacyOptions().catch(error => console.warn('ADMOB_PRIVACY_OPTIONS_FAILED', error)); }} />}
           <Row icon="chatbubble-ellipses-outline" label={t('settings.feedback')} onPress={actions.handleOpenFeedback} />
         </Section>
         <Section>

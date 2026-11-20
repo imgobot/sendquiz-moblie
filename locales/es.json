@@ -31,6 +31,7 @@
     }
   },
   "settings": {
+    "adPrivacy": "Opciones de privacidad de anuncios",
     "sectionAccount": "Cuenta",
     "sectionAppInfo": "Info de la App",
     "sectionSupport": "Soporte",

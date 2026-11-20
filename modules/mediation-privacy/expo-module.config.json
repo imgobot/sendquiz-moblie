@@ -1,0 +1,5 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": { "modules": ["MediationPrivacyModule"] },
+  "android": { "modules": ["expo.modules.mediationprivacy.MediationPrivacyModule"] }
+}

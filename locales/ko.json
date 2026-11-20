@@ -31,6 +31,7 @@
     }
   },
   "settings": {
+    "adPrivacy": "광고 개인정보 설정",
     "sectionAccount": "계정",
     "sectionAppInfo": "앱 정보",
     "sectionSupport": "지원",

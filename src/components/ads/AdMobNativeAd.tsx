@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
 import { useIsFocused } from 'expo-router/react-navigation';
 import { Image, Platform, StyleSheet, Text, View } from 'react-native';
@@ -12,13 +13,11 @@ import {
 } from 'react-native-google-mobile-ads';
 import { APP_PALETTE } from '../../constants/palette';
 import { useButtonBlue } from '../../contexts/ThemeContext';
-import { useAdMobReady } from '../../utils/adMobReady';
+import { useAds } from '../../contexts/AdsContext';
 
 export function AdMobNativeAd() {
   const isFocused = useIsFocused();
-  const isReady = useAdMobReady();
-
-  if (Platform.OS !== 'ios' && Platform.OS !== 'android') return null;
+  const { ready: isReady } = useAds();
 
   return (
     <View style={styles.card}>
@@ -28,6 +27,7 @@ export function AdMobNativeAd() {
 }
 
 function NativeAdContent() {
+  const { t } = useTranslation();
   const buttonBlue = useButtonBlue();
   const adUnitId = Constants.expoConfig?.extra?.nativeAdUnitIds?.[Platform.OS];
   const { nativeAd } = useNativeAd({
@@ -50,7 +50,7 @@ function NativeAdContent() {
       </View>
       <View style={styles.metadata}>
         <View style={styles.advertiserRow}>
-          <Text style={styles.adLabel}>AD</Text>
+          <Text style={styles.adLabel}>{t('common.ad')}</Text>
           {nativeAd.advertiser?.trim() ? (
             <NativeAsset assetType={NativeAssetType.ADVERTISER}>
               <Text numberOfLines={1} style={styles.advertiser}>{nativeAd.advertiser}</Text>
@@ -68,7 +68,7 @@ function NativeAdContent() {
       </View>
       {nativeAd.callToAction?.trim() ? (
         <NativeAsset assetType={NativeAssetType.CALL_TO_ACTION}>
-          <Text numberOfLines={1} style={[styles.action, { backgroundColor: buttonBlue }]}>더보기</Text>
+          <Text numberOfLines={1} style={[styles.action, { backgroundColor: buttonBlue }]}>{nativeAd.callToAction}</Text>
         </NativeAsset>
       ) : null}
     </NativeAdView>

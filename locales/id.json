@@ -31,6 +31,7 @@
     }
   },
   "settings": {
+    "adPrivacy": "Opsi privasi iklan",
     "sectionAccount": "Akun",
     "sectionAppInfo": "Info Aplikasi",
     "sectionSupport": "Dukungan",
