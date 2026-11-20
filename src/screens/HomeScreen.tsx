@@ -332,7 +332,7 @@ export default function HomeScreen() {
         >
           {selectedChatId != null ? (
             <View style={[styles.chatHeaderAd, { backgroundColor: palette.background }]}>
-              <AdMobNativeAd compact />
+              <AdMobNativeAd />
             </View>
           ) : null}
           {isThreadOpen ? (
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scroll: { flex: 1 },
   chatHeaderAd: {
-    width: '100%',
+    marginHorizontal: -16,
     minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',

@@ -1,5 +1,7 @@
 # AGENTS.md
 
+This Expo app targets Android and iOS only. Web is out of scope.
+
 ## Tooling and validation
 
 - Use npm and update `package-lock.json` with dependency changes.

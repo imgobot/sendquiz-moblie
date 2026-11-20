@@ -5,19 +5,15 @@ const DEFAULT_APP_BASE_URL = 'https://sendquiz.imgobot.com';
 const ROOT_VIEW_BACKGROUND_COLOR = '#FFFFFF';
 const EAS_PROJECT_ID = '3ae1c128-d77a-4bbc-ba89-b1c880a0a793';
 const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_MAVEN_REPOS = [
-  'https://android-sdk.is.com/',
   'https://artifact.bytedance.com/repository/pangle/',
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_ANDROID_DEPENDENCIES = [
-  'com.google.ads.mediation:inmobi:11.5.1.0',
-  'com.google.ads.mediation:ironsource:9.8.0.0',
+  'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.6.0',
   'com.google.ads.mediation:vungle:7.8.0.0',
   'com.google.ads.mediation:facebook:6.22.0.1',
   'com.google.ads.mediation:pangle:8.4.0.5.0',
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_IOS_PODS = [
-  { name: 'GoogleMobileAdsMediationInMobi', version: '11.5.0.0' },
-  { name: 'GoogleMobileAdsMediationIronSource', version: '9.8.0.0.0' },
   { name: 'GoogleMobileAdsMediationVungle', version: '7.7.8.0' },
   { name: 'GoogleMobileAdsMediationFacebook', version: '6.22.1.0' },
   { name: 'GoogleMobileAdsMediationPangle', version: '8.4.0.8.0' },
@@ -74,7 +70,7 @@ export default (): ExpoConfig => {
     (isProduction ? './google-services.json' : undefined);
 
   return {
-    name: isProduction ? 'SEND' : 'SEND(dev)',
+    name: isProduction ? 'send' : 'send(dev)',
     slug: 'send',
     scheme: isProduction ? 'send' : 'send-dev',
     version: DEFAULT_APP_VERSION,
@@ -83,7 +79,7 @@ export default (): ExpoConfig => {
     backgroundColor: ROOT_VIEW_BACKGROUND_COLOR,
     icon: './assets/images/icon.png',
     ios: {
-      icon: './assets/images/ios-icon.png',
+      icon: './assets/Send.icon',
       backgroundColor: ROOT_VIEW_BACKGROUND_COLOR,
       supportsTablet: false,
       bundleIdentifier: appIdentifier,
@@ -103,7 +99,6 @@ export default (): ExpoConfig => {
       
     },
     android: {
-      icon: './assets/images/icon.png',
       package: appIdentifier,
       userInterfaceStyle: 'automatic',
       googleServicesFile: androidGoogleServicesFile,
@@ -153,6 +148,7 @@ export default (): ExpoConfig => {
         {
           androidAppId: 'ca-app-pub-1854881881447643~4497885180',
           iosAppId: 'ca-app-pub-1854881881447643~2115920960',
+          androidSdk: 'nextgen',
           delayAppMeasurementInit: true,
           optimizeInitialization: true,
           optimizeAdLoading: true,

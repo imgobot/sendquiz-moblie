@@ -38,7 +38,6 @@ const GOOGLE_MOBILE_ADS_MEDIATION_XCCONFIG_EXCLUDED_ARCHS =
   'arm64e armv7 armv7s i386';
 const GOOGLE_MOBILE_ADS_MEDIATION_XCCONFIG_PODS = [
   'FBAudienceNetwork',
-  'IronSourceAdQualitySDK',
 ] as const;
 const GOOGLE_MOBILE_ADS_MEDIATION_SK_AD_NETWORK_IDS = [
   '238da6jt44.skadnetwork',
@@ -109,6 +108,8 @@ const IOS_MEDIATION_TARGET_PODFILE_BLOCK_START =
 const IOS_MEDIATION_TARGET_PODFILE_BLOCK_END =
   '# @generated end google-mobile-ads-mediation-pods';
 const IOS_MEDIATION_PODFILE_BLOCK = `${IOS_MEDIATION_PODFILE_BLOCK_START}
+$RNGoogleMobileAdsSDKVersion = '13.12.0'
+
 GOOGLE_MOBILE_ADS_MEDIATION_EXCLUDED_ARCHS = '${GOOGLE_MOBILE_ADS_MEDIATION_XCCONFIG_EXCLUDED_ARCHS}'.freeze
 GOOGLE_MOBILE_ADS_MEDIATION_EXCLUDED_ARCHS_PODS = %w[
 ${GOOGLE_MOBILE_ADS_MEDIATION_XCCONFIG_PODS.map((pod) => `  ${pod}`).join('\n')}
@@ -162,14 +163,22 @@ function syncIosMediationPodfileBlock(contents: string): string {
 
 function syncAndroidDependencies(contents: string, dependencies: readonly string[]): string {
   const nextContents = contents.replace(
-    /^.*com\.google\.ads\.mediation:(?:inmobi|ironsource|vungle|facebook|pangle):.*\n?/gm,
+    /^.*(?:com\.google\.ads\.mediation:(?:inmobi|ironsource|vungle|facebook|pangle)|com\.google\.android\.libraries\.ads\.mobile\.sdk:ads-mobile-sdk):.*\n?/gm,
     '',
   );
 
+  const exclusionBlock = `// @generated begin google-mobile-ads-nextgen-exclusions
+configurations.configureEach {
+    exclude group: 'com.google.android.gms', module: 'play-services-ads'
+    exclude group: 'com.google.android.gms', module: 'play-services-ads-lite'
+}
+// @generated end google-mobile-ads-nextgen-exclusions`;
+
   return nextContents
+    .replace(/\/\/ @generated begin google-mobile-ads-nextgen-exclusions[\s\S]*?\/\/ @generated end google-mobile-ads-nextgen-exclusions\n?/g, '')
     .replace(
       /dependencies\s*\{/,
-      `dependencies {\n${dependencies.map((dependency) => `    implementation "${dependency}"`).join('\n')}`,
+      `${exclusionBlock}\n\ndependencies {\n${dependencies.map((dependency) => `    implementation "${dependency}"`).join('\n')}`,
     )
     .replace(/\n{3,}/g, '\n\n');
 }
